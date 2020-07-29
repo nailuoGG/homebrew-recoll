@@ -20,11 +20,13 @@ class Recoll < Formula
   depends_on "antiword"
   depends_on "poppler"
   depends_on "unrtf"
+  depends_on "aspell"
 
   def install
     # homebrew has webengine, not webkit and we're not ready for this yet
     system "./configure", "--disable-python-module",
                           "--disable-webkit",
+                          "--disable-python-chm",
                           "QMAKE=/usr/local/opt/qt/bin/qmake",
                           "--prefix=#{prefix}"
     system "make", "install"
