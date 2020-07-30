@@ -1,5 +1,4 @@
 require 'formula'
-
 # Notes:
 # - This formula is missing python-libxml2 and python-libxslt deps
 #   which recoll needs for indexing many formats (e.g. libreoffice,
@@ -9,6 +8,7 @@ require 'formula'
 # Still a bit of work then, but I did not investigate, because the macports
 # version was an easier target.
 
+#  copy from https://framagit.org/medoc92/recoll/-/blob/master/packaging/homebrew/recoll.rb
 class Recoll < Formula
   desc "Desktop search tool"
   homepage 'http://www.recoll.org'
