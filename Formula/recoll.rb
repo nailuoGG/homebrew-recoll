@@ -21,6 +21,7 @@ class Recoll < Formula
   depends_on "poppler"
   depends_on "unrtf"
   depends_on "aspell"
+  depends_on "exiftool"
 
   def install
     # homebrew has webengine, not webkit and we're not ready for this yet
