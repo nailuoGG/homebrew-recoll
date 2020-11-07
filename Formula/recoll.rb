@@ -25,8 +25,7 @@ class Recoll < Formula
 
   def install
     # homebrew has webengine, not webkit and we're not ready for this yet
-    system "./configure", "--disable-python-module",
-                          "--disable-webkit",
+    system "./configure", "--disable-webkit",
                           "--disable-python-chm",
                           "QMAKE=/usr/local/opt/qt/bin/qmake",
                           "--prefix=#{prefix}"
