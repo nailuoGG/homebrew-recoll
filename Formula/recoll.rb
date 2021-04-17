@@ -12,8 +12,8 @@ require 'formula'
 class Recoll < Formula
   desc "Desktop search tool"
   homepage 'http://www.recoll.org'
-  url 'https://www.lesbonscomptes.com/recoll/recoll-1.27.10.tar.gz'
-  sha256 "3c9cac389a5f17990aa01c67388ad8d51e1c28415580b53b27ad57e03a1d1c64"
+  url 'https://www.lesbonscomptes.com/recoll/recoll-1.30.1.tar.gz'
+  sha256 "835f06fea60d95cb6238a4f38937b506b33867b35c7808e9e4f335f4cd2c5d63"
 
   depends_on "xapian"
   depends_on "qt"
