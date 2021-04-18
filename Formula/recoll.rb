@@ -27,7 +27,7 @@ class Recoll < Formula
     # homebrew has webengine, not webkit and we're not ready for this yet
     system "./configure", "--disable-webkit",
                           "--disable-python-chm",
-                          "QMAKE=/opt/homebrew/bin/qmake",
+                          "--disable-qtgui",
                           "--prefix=#{prefix}"
     system "make", "install"
     bin.install "#{buildpath}/qtgui/recoll.app/Contents/MacOS/recoll"
