@@ -16,7 +16,7 @@ class Recoll < Formula
   sha256 "835f06fea60d95cb6238a4f38937b506b33867b35c7808e9e4f335f4cd2c5d63"
 
   depends_on "xapian"
-  depends_on "qt"
+  depends_on "qt@5"
   depends_on "antiword"
   depends_on "poppler"
   depends_on "unrtf"
