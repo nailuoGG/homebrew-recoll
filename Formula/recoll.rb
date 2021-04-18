@@ -30,7 +30,7 @@ class Recoll < Formula
                           "--disable-qtgui",
                           "--prefix=#{prefix}"
     system "make", "install"
-    bin.install "#{buildpath}/qtgui/recoll.app/Contents/MacOS/recoll"
+#    bin.install "#{buildpath}/qtgui/recoll.app/Contents/MacOS/recoll"
   end
 
   test do
