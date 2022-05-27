@@ -12,8 +12,8 @@ require 'formula'
 class Recoll < Formula
   desc "Desktop search tool"
   homepage 'http://www.recoll.org'
-  url 'https://www.lesbonscomptes.com/recoll/recoll-1.27.3.tar.gz'
-  sha256 "3f62b792f57895a20dd334eb841d6fbe851e687dab43ea89cb3fbc0ccebcddac"
+  url 'https://www.lesbonscomptes.com/recoll/recoll-1.32.1.tar.gz'
+  sha256 "d4bceab56d9a1a38a7e8cd34bf3d9d4f76fbd446388eb7081a46ab362d7f4cc0"
 
   depends_on "xapian"
   depends_on "qt"
@@ -28,7 +28,7 @@ class Recoll < Formula
     system "./configure", "--disable-python-module",
                           "--disable-webkit",
                           "--disable-python-chm",
-                          "QMAKE=/usr/local/opt/qt/bin/qmake",
+                          "QMAKE=qmake",
                           "--prefix=#{prefix}"
     system "make", "install"
     bin.install "#{buildpath}/qtgui/recoll.app/Contents/MacOS/recoll"
