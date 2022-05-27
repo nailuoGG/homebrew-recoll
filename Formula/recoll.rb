@@ -16,7 +16,7 @@ class Recoll < Formula
   sha256 "d4bceab56d9a1a38a7e8cd34bf3d9d4f76fbd446388eb7081a46ab362d7f4cc0"
 
   depends_on "xapian"
-  depends_on "qt"
+  depends_on "qt@5"
   depends_on "antiword"
   depends_on "poppler"
   depends_on "unrtf"
@@ -25,13 +25,12 @@ class Recoll < Formula
 
   def install
     # homebrew has webengine, not webkit and we're not ready for this yet
-    system "./configure", "--disable-python-module",
-                          "--disable-webkit",
+    system "./configure", "--disable-webkit",
                           "--disable-python-chm",
-                          "QMAKE=qmake",
+                          "--disable-qtgui",
                           "--prefix=#{prefix}"
     system "make", "install"
-    bin.install "#{buildpath}/qtgui/recoll.app/Contents/MacOS/recoll"
+#    bin.install "#{buildpath}/qtgui/recoll.app/Contents/MacOS/recoll"
   end
 
   test do
