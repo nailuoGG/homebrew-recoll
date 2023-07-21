@@ -4,14 +4,14 @@
 
 ** Recoll Homebrew Formula
 
-[Recoll](https://www.lesbonscomptes.com/recoll/) is a full-text search tool for Unix/Linux systems. This repository contains the Homebrew formula for Recoll, allowing you to easily install and manage Recoll on macOS using Homebrew.
+[[https://www.lesbonscomptes.com/recoll/][Recoll]] is a full-text search tool for Unix/Linux systems. This repository contains the Homebrew formula for Recoll, allowing you to easily install and manage Recoll on macOS using Homebrew.
 
 ** Installation
 
 To install Recoll using Homebrew, follow these steps:
 
 1. Open a terminal.
-2. Make sure you have Homebrew installed. If not, you can install it by following the instructions at [brew.sh](https://brew.sh/).
+2. Make sure you have Homebrew installed. If not, you can install it by following the instructions at [[https://brew.sh/][brew.sh]].
 3. Tap into this repository by running the following command:
 
    #+begin_src shell
@@ -51,15 +51,15 @@ Here are a few common commands to get you started:
 
 ** Contributing
 
-If you encounter any issues with the Recoll Homebrew formula or would like to contribute to its development, please visit the [GitHub repository](https://github.com/nailuoGG/homebrew-recoll) and open an issue or submit a pull request.
+If you encounter any issues with the Recoll Homebrew formula or would like to contribute to its development, please visit the [[https://github.com/nailuoGG/homebrew-recoll][GitHub repository]] and open an issue or submit a pull request.
 
 ** License
 
-Recoll is distributed under the [GPLv2 license](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html). Please refer to the official Recoll documentation for more details.
+Recoll is distributed under the [[https://www.gnu.org/licenses/old-licenses/gpl-2.0.html][GPLv2 license]]. Please refer to the official Recoll documentation for more details.
 
 ** Acknowledgements
 
-The Recoll Homebrew formula in this repository is maintained by [Your Name](https://github.com/nailuoGG). Special thanks to the Recoll development team for creating this fantastic search tool.
+The Recoll Homebrew formula in this repository is maintained by [[https://github.com/nailuoGG][nailuoGG]]. Special thanks to the Recoll development team for creating this fantastic search tool.
 
 ## Disclaimer
 
