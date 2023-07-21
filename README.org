@@ -72,6 +72,6 @@ Recoll is distributed under the [[https://www.gnu.org/licenses/old-licenses/gpl-
 
 The Recoll Homebrew formula in this repository is maintained by [[https://github.com/nailuoGG][nailuoGG]]. Special thanks to the Recoll development team for creating this fantastic search tool.
 
-## Disclaimer
+** Disclaimer
 
 This repository is not officially affiliated with the Recoll project.
