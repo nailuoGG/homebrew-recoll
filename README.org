@@ -1,7 +1,6 @@
-#+begin_src html
+#+begin_html
 <h1 align="center">Recoll</h1>
-#+end_src
-
+#+end_html
 
 ** Recoll Homebrew Formula
 
