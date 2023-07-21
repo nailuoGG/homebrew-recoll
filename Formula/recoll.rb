@@ -11,9 +11,11 @@ require 'formula'
 #  copy from https://framagit.org/medoc92/recoll/-/blob/master/packaging/homebrew/recoll.rb
 class Recoll < Formula
   desc "Desktop search tool"
-  homepage 'http://www.recoll.org'
-  url 'https://www.lesbonscomptes.com/recoll/recoll-1.32.1.tar.gz'
-  sha256 "d4bceab56d9a1a38a7e8cd34bf3d9d4f76fbd446388eb7081a46ab362d7f4cc0"
+  homepage "http://www.recoll.org"
+  url "https://www.lesbonscomptes.com/recoll/recoll-1.35.0.tar.gz"
+  sha256 "e66b0478709dae93d2d1530256885836595a14925d5d19fc95a63a04d06df941"
+
+  option "build-from-source", "Build from source instead of using precompiled binary"
 
   depends_on "xapian"
   depends_on "qt@5"
@@ -24,14 +26,18 @@ class Recoll < Formula
   depends_on "exiftool"
 
   def install
-    # homebrew has webengine, not webkit and we're not ready for this yet
-    system "./configure", "--disable-webkit",
-                          "--disable-python-chm",
-                          "QMAKE=qmake",
-                          "--prefix=#{prefix}"
-
-    system "make", "install"
-    bin.install "#{buildpath}/qtgui/recoll.app/Contents/MacOS/recoll"
+    if build.include? "build-from-source"
+      # homebrew has webengine, not webkit and we're not ready for this yet
+      system "./configure", "--disable-webkit",
+                            "--disable-python-chm",
+                            "QMAKE=qmake",
+                            "--prefix=#{prefix}"
+      system "make", "install"
+      bin.install "#{buildpath}/qtgui/recoll.app/Contents/MacOS/recoll"
+    else
+      # Install precompiled binary
+      prefix.install Dir["*"]
+    end
   end
 
   test do
