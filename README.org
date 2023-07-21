@@ -15,7 +15,7 @@ To install Recoll using Homebrew, follow these steps:
 3. Tap into this repository by running the following command:
 
    #+begin_src shell
-   brew tap nailuoGG/homebrew-recoll
+   brew tap nailuoGG/recoll
    #+end_src
 4. Install Recoll by running the following command:
 
