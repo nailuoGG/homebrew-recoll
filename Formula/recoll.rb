@@ -26,7 +26,7 @@ class Recoll < Formula
   depends_on "exiftool"
 
   def install
-    if build.include? "build-from-source"
+    if build.with? "build-from-source"
       # homebrew has webengine, not webkit and we're not ready for this yet
       system "./configure", "--disable-webkit",
                             "--disable-python-chm",
