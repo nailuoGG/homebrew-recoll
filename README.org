@@ -1,0 +1,77 @@
+#+begin_html
+<h1 align="center">Recoll</h1>
+#+end_html
+
+** Recoll Homebrew Formula
+
+[[https://www.lesbonscomptes.com/recoll/][Recoll]] is a full-text search tool for Unix/Linux systems. This repository contains the Homebrew formula for Recoll, allowing you to easily install and manage Recoll on macOS using Homebrew.
+
+** Installation
+
+To install Recoll using Homebrew, follow these steps:
+
+1. Open a terminal.
+2. Make sure you have Homebrew installed. If not, you can install it by following the instructions at [[https://brew.sh/][brew.sh]].
+3. Tap into this repository by running the following command:
+
+   #+begin_src shell
+   brew tap nailuoGG/recoll
+   #+end_src
+
+4. Install Recoll by running the following command:
+
+   We can install pre-compiled versions of the software, and these files are sourced from the official documentation: https://www.lesbonscomptes.com/recoll/pages/recoll-macos.html.
+
+   Please note that the packages from the official source are not digitally signed.
+
+   #+begin_src shell
+   brew install recoll
+   #+end_src
+
+   We can also compile and install from the source code, but this requires installing some dependencies, and the compilation code in this repository may not have been thoroughly tested.
+
+   #+begin_src shell
+   brew install recoll --build-from-source
+   #+end_src
+
+5. After the installation is complete, you can run Recoll by typing `recoll` in the terminal.
+
+** Usage
+
+Recoll provides a powerful command-line interface for searching and managing your indexed documents. You can find detailed information on how to use Recoll in the [[https://www.lesbonscomptes.com/recoll/usermanual/usermanual.html][official Recoll documentation]].
+
+Here are a few common commands to get you started:
+
+- To start indexing your documents, use the following command:
+
+  #+begin_src shell
+  recollindex
+  #+end_src
+
+- To search for a specific term, use the following command:
+
+  #+begin_src shell
+  recoll -t <term>
+  #+end_src
+
+- To open the graphical user interface (GUI) version of Recoll, run:
+
+#+begin_src shell
+  recoll -gui
+#+end_src
+
+** Contributing
+
+If you encounter any issues with the Recoll Homebrew formula or would like to contribute to its development, please visit the [[https://github.com/nailuoGG/homebrew-recoll][GitHub repository]] and open an issue or submit a pull request.
+
+** License
+
+Recoll is distributed under the [[https://www.gnu.org/licenses/old-licenses/gpl-2.0.html][GPLv2 license]]. Please refer to the official Recoll documentation for more details.
+
+** Acknowledgements
+
+The Recoll Homebrew formula in this repository is maintained by [[https://github.com/nailuoGG][nailuoGG]]. Special thanks to the Recoll development team for creating this fantastic search tool.
+
+** Disclaimer
+
+This repository is not officially affiliated with the Recoll project.

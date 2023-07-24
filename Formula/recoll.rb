@@ -9,28 +9,41 @@ require 'formula'
 # version was an easier target.
 
 #  copy from https://framagit.org/medoc92/recoll/-/blob/master/packaging/homebrew/recoll.rb
+
 class Recoll < Formula
   desc "Desktop search tool"
   homepage 'http://www.recoll.org'
-  url 'https://www.lesbonscomptes.com/recoll/recoll-1.30.1.tar.gz'
-  sha256 "835f06fea60d95cb6238a4f38937b506b33867b35c7808e9e4f335f4cd2c5d63"
-
-  depends_on "xapian"
-  depends_on "qt@5"
-  depends_on "antiword"
-  depends_on "poppler"
-  depends_on "unrtf"
-  depends_on "aspell"
-  depends_on "exiftool"
+  url 'https://www.lesbonscomptes.com/recoll/recoll-1.35.0.tar.gz'
+  sha256 "e66b0478709dae93d2d1530256885836595a14925d5d19fc95a63a04d06df941"
+  option "build-from-source", "Build Recoll from source"
 
   def install
-    # homebrew has webengine, not webkit and we're not ready for this yet
-    system "./configure", "--disable-webkit",
-                          "--disable-python-chm",
-                          "--disable-qtgui",
-                          "--prefix=#{prefix}"
-    system "make", "install"
-#    bin.install "#{buildpath}/qtgui/recoll.app/Contents/MacOS/recoll"
+    ohai ARGV
+    if ARGV.include? "--build-from-source"
+      ohai "start install from source code"
+        depends_on "xapian"
+        depends_on "qt@5"
+        depends_on "antiword"
+        depends_on "poppler"
+        depends_on "unrtf"
+        depends_on "aspell"
+        depends_on "exiftool"
+      # Build from source
+      # homebrew has webengine, not webkit and we're not ready for this yet
+      system "./configure", "--disable-webkit",
+                            "--disable-python-chm",
+                            "QMAKE=qmake",
+                            "--prefix=#{prefix}"
+      system "make", "install"
+    else
+      ohai "start install from prebuild package "
+      # Download and install the pre-built binary
+      dmg_url = "https://www.lesbonscomptes.com/recoll/downloads/macos/recoll-1.33.4-20230107-097c8ea8.dmg"
+      system "curl", "-L", "-o", "recoll.dmg", dmg_url
+      system "hdiutil", "mount", "-nobrowse", "recoll.dmg"
+      system "cp", "-R", "/Volumes/:Users:dockes:Recoll:recoll:src:build-recoll-win-Qt_6_2_4_for_macOS-Release:recoll/recoll.app", prefix
+      system "hdiutil", "unmount", "/Volumes/:Users:dockes:Recoll:recoll:src:build-recoll-win-Qt_6_2_4_for_macOS-Release:recoll"
+    end
   end
 
   test do
