@@ -12,6 +12,20 @@ cask "recoll" do
   postflight do
     system_command "xattr", args: ["-rd", "com.apple.quarantine", "#{appdir}/Recoll.app"]
   end
-  
+
+  caveats do
+    <<~EOS
+      Recoll needs to be configured to find commands when started via the desktop launcher due to restricted PATH.
+      Set the 'recollhelperpath' in your index configuration file (~/.recoll/recoll.conf) as follows:
+
+      Intel Mac:
+      echo "recollhelperpath = /usr/local/bin" >> ~/.recoll/recoll.conf
+
+      Apple Silicon Mac:
+      echo "recollhelperpath = /opt/homebrew/bin" >> ~/.recoll/recoll.conf
+
+      Adjust this path based on your Homebrew installation and Mac's architecture.
+    EOS
+  end
   zap trash: []
 end
