@@ -50,19 +50,13 @@ Here are a few common commands to get you started:
   recoll -t <term>
   #+end_src
 
-- To open the graphical user interface (GUI) version of Recoll, run:
-
-#+begin_src shell
-  recoll -gui
-#+end_src
-
 ** Contributing
 
 If you encounter any issues with the Recoll Homebrew formula or would like to contribute to its development, please visit the [[https://github.com/nailuoGG/homebrew-recoll][GitHub repository]] and open an issue or submit a pull request.
 
 ** License
 
-Recoll is distributed under the [[https://www.gnu.org/licenses/old-licenses/gpl-2.0.html][GPLv2 license]]. Please refer to the official Recoll documentation for more details.
+[[https://framagit.org/medoc92/recoll][Recoll]] is free, open source, and licensed under the GPL. Please refer to the official Recoll documentation for more details.
 
 ** Acknowledgements
 
