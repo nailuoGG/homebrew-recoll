@@ -13,19 +13,20 @@ cask "recoll" do
     system_command "xattr", args: ["-rd", "com.apple.quarantine", "#{appdir}/Recoll.app"]
   end
 
-  caveats do
-    <<~EOS
-      Recoll needs to be configured to find commands when started via the desktop launcher due to restricted PATH.
-      Set the 'recollhelperpath' in your index configuration file (~/.recoll/recoll.conf) as follows:
+  caveats <<~EOS
+    For Recoll to find commands, set recollhelperpath in ~/.recoll/recoll.conf:
 
-      Intel Mac:
-      echo "recollhelperpath = /usr/local/bin" >> ~/.recoll/recoll.conf
+    Intel Mac:
+    echo "recollhelperpath = /usr/local/bin" >> ~/.recoll/recoll.conf
 
-      Apple Silicon Mac:
-      echo "recollhelperpath = /opt/homebrew/bin" >> ~/.recoll/recoll.conf
+    Apple Silicon Mac:
+    echo "recollhelperpath = /opt/homebrew/bin" >> ~/.recoll/recoll.conf
 
-      Adjust this path based on your Homebrew installation and Mac's architecture.
-    EOS
-  end
+    To use recoll and recollindex from the terminal, add Recoll.app to your PATH:
+    echo 'export PATH=/Applications/Recoll.app/Contents/MacOS:$PATH' >> ~/.zshrc
+
+    Adjust ~/.zshrc to your shell's config file if you use a different shell.
+  EOS
+
   zap trash: []
 end
