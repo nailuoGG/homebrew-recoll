@@ -1,6 +1,6 @@
 cask "recoll" do
-  version "1.37.4-20240208-89366c8a"
-  sha256 "2c93ce3fd54842b3d6ebcbe71b182447bb80e8e50fe316916558166a9310485c"
+  version "1.38.1-20240516-375bcbc0"
+  sha256 "5c15e9000666c7019d641e62e9a3f751c35f44cd0009da76cdf0e31eceb9353f"
 
   url "https://www.lesbonscomptes.com/recoll/downloads/macos/recoll-#{version}.dmg"
   name "Recoll"

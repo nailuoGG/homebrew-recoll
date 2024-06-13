@@ -25,7 +25,7 @@ To install Recoll using Homebrew, follow these steps:
    Please note that the packages from the official source are not digitally signed.
 
    #+begin_src shell
-   brew install recoll
+   brew install --cask recoll
    #+end_src
 
    This repository doesn't offer an option to compile from source because it requires QT, and setting up the build environment on the macOS command line is complicate.
