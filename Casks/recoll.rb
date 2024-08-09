@@ -1,32 +1,32 @@
-cask "recoll" do
-  version "1.38.1-20240516-375bcbc0"
-  sha256 "5c15e9000666c7019d641e62e9a3f751c35f44cd0009da76cdf0e31eceb9353f"
+cask 'recoll' do
+  version '1.38.1-20240516-375bcbc0'
+  sha256 '5c15e9000666c7019d641e62e9a3f751c35f44cd0009da76cdf0e31eceb9353f'
+  name 'Recoll'
+  desc 'Full-text search for your desktop.'
 
-  url "https://www.lesbonscomptes.com/recoll/downloads/macos/recoll-#{version}.dmg"
-  name "Recoll"
-  desc "Full-text search tool"
-  homepage "https://www.lesbonscomptes.com/recoll/"
+  homepage 'https://www.recoll.org/'
 
-  app "Recoll.app"
+  depends_on macos: '>= :big_sur'
 
-  postflight do
-    system_command "xattr", args: ["-rd", "com.apple.quarantine", "#{appdir}/Recoll.app"]
+  app 'Recoll.app'
+
+  livecheck do
+    url 'https://www.recoll.org/downloads/macos/'
+    regex(/href="recoll[._-]([\d.-]+[a-f0-9]+)\.dmg"/i)
   end
 
-  caveats <<~EOS
-    For Recoll to find commands, set recollhelperpath in ~/.recoll/recoll.conf:
+  url "https://www.recoll.org/downloads/macos/recoll-#{version}.dmg"
 
-    Intel Mac:
-    echo "recollhelperpath = /usr/local/bin" >> ~/.recoll/recoll.conf
+  postflight do
+    system_command 'xattr', args: ['-rd', 'com.apple.quarantine', "#{appdir}/Recoll.app"]
+  end
 
-    Apple Silicon Mac:
-    echo "recollhelperpath = /opt/homebrew/bin" >> ~/.recoll/recoll.conf
+  caveats do
+    path_environment_variable "#{appdir}/Recoll.app/Contents/MacOS"
+  end
 
-    To use recoll and recollindex from the terminal, add Recoll.app to your PATH:
-    echo 'export PATH=/Applications/Recoll.app/Contents/MacOS:$PATH' >> ~/.zshrc
-
-    Adjust ~/.zshrc to your shell's config file if you use a different shell.
-  EOS
-
-  zap trash: []
+  zap trash: [
+    '~/.recoll',
+    '~/.config/Recoll.org'
+  ]
 end
