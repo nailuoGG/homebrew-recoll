@@ -20,11 +20,10 @@ cask 'recoll' do
   postflight do
     system_command 'xattr', args: ['-rd', 'com.apple.quarantine', "#{appdir}/Recoll.app"]
 
-    recollpath = ENV['PATH'].split(':').sort.join(':')
-    file_path = File.expand_path('~/.recoll/recoll.conf')
-    unless File.read(file_path).include?('recollhelperpath =')
-      File.open(file_path, 'a') { |f| f.puts "recollhelperpath = #{recollpath}" }
-    end
+    file '~/.recoll/recoll.conf' => <<~EOF
+      # This is a sample configuration file
+      recollhelperpath=#{ENV['PATH'].split(':').sort.join(':')}
+    EOF
   end
 
   caveats do
