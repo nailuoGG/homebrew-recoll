@@ -48,8 +48,13 @@ jobs:
           echo Add other actions to build,
           echo test, and deploy your project.
           ln -s "$GITHUB_WORKSPACE" "$(brew --prefix)/Library/Taps"
+
           brew --help
           brew search recoll
+
+      # Runs a single command using the runners shell
+      - name: Install App
+        run: brew install --cask recoll
 
       - name: Clean up CI machine
         if: runner.os == 'macOS'
