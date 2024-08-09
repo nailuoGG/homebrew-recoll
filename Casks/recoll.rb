@@ -6,6 +6,8 @@ cask 'recoll' do
 
   homepage 'https://www.recoll.org/'
 
+  depends_on macos: '>= :big_sur'
+
   app 'Recoll.app'
 
   livecheck do
