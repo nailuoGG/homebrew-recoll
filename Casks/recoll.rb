@@ -19,16 +19,6 @@ cask 'recoll' do
 
   postflight do
     system_command 'xattr', args: ['-rd', 'com.apple.quarantine', "#{appdir}/Recoll.app"]
-
-    ruby do
-      dir = '~/.recoll'
-      Dir.mkdir(dir) unless Dir.exist?(dir)
-      file_path = "#{dir}/recoll.conf"
-
-      File.open(file_path, 'w') do |f|
-        f.puts("recollhelperpath=#{ENV['PATH'].split(':').sort.join(':')}")
-      end
-    end
   end
 
   caveats do
