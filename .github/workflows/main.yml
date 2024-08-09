@@ -51,6 +51,6 @@ jobs:
           brew --help
           brew search recoll
 
-     - name: Clean up CI machine
+      - name: Clean up CI machine
         if: runner.os == 'macOS'
         run: brew uninstall --zap recoll
