@@ -4,7 +4,7 @@ cask 'recoll' do
 
   url "https://www.recoll.org/downloads/macos/recoll-#{version}.dmg"
   name 'Recoll'
-  desc 'Recoll finds documents based on their contents as well as their file names.'
+  desc 'Full-text search for your desktop.'
 
   homepage 'https://www.recoll.org/'
 
