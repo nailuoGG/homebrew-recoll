@@ -23,7 +23,20 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        with:
+          core: false
+          cask: true
+
+      - name: Enable debug mode
+        run: |
+          echo 'HOMEBREW_DEBUG=1' >> "${GITHUB_ENV}"
+          echo 'HOMEBREW_VERBOSE=1' >> "${GITHUB_ENV}"
+        if: runner.debug
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -34,3 +47,10 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+          ln -s "$GITHUB_WORKSPACE" "$(brew --prefix)/Library/Taps"
+          brew --help
+          brew search recoll
+
+     - name: Clean up CI machine
+        if: runner.os == 'macOS'
+        run: brew uninstall --zap recoll
