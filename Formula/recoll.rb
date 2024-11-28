@@ -28,18 +28,19 @@ class Recoll < Formula
     system "ninja", "-C", "build"
     system "ninja", "-C", "build", "install"
     
-    # Link the .app bundle to Applications
+    # Install the .app bundle
     prefix.install "build/qtgui/recoll.app"
-    Applications.install_symlink prefix/"recoll.app"
-
-    # Fix Python extensions location (meson bug workaround)
-    if Dir.exist?("#{prefix}/usr/local/lib/python3.13/site-packages")
-      system "mv", "#{prefix}/usr/local/lib/python3.13/site-packages/*", "#{prefix}/lib/python3.13/site-packages/"
-      system "rm", "-rf", "#{prefix}/usr/local"
-    end
   end
 
   def caveats
+    python_fix_msg = if Dir.exist?("#{prefix}/usr/local/lib/python3.13/site-packages")
+      <<~EOS
+        Some Python extensions are in the wrong location. To fix this, run:
+          sudo mv #{prefix}/usr/local/lib/python3.13/site-packages/* #{prefix}/lib/python3.13/site-packages/
+          sudo rm -rf #{prefix}/usr/local
+      EOS
+    end
+
     <<~EOS
       To enable image tags indexing, install ExifTool:
         cpan Image::ExifTool
@@ -48,6 +49,11 @@ class Recoll < Formula
         pip3 install --user --break-system-packages lxml mutagen py7zr pyyaml
 
       Note: Python modules will be installed in ~/Library/Python/3.13/lib/python/site-packages
+
+      To create an application shortcut in /Applications, run:
+        ln -s #{prefix}/recoll.app /Applications/
+
+      #{python_fix_msg}
     EOS
   end
 
