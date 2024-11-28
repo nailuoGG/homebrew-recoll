@@ -30,6 +30,17 @@ class Recoll < Formula
     
     # Install the .app bundle
     prefix.install "build/qtgui/recoll.app"
+    
+    # Fix dynamic library loading
+    frameworks_dir = "#{prefix}/recoll.app/Contents/Frameworks"
+    mkdir_p frameworks_dir
+    dylib = "#{lib}/librecoll.39.dylib"
+    cp dylib, frameworks_dir
+    dylib_name = File.basename(dylib)
+    system "install_name_tool", "-change",
+           "@rpath/#{dylib_name}",
+           "@executable_path/../Frameworks/#{dylib_name}",
+           "#{prefix}/recoll.app/Contents/MacOS/recoll"
   end
 
   def caveats
