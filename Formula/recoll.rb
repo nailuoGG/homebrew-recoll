@@ -14,6 +14,10 @@ class Recoll < Formula
   depends_on "libxml2"
   depends_on "xapian"
   depends_on "qt@5"
+  depends_on "antiword"  # For MS Word documents
+  depends_on "unrtf"     # For RTF documents
+  depends_on "perl"      # For ExifTool installation
+  depends_on "python@3.13"
 
   def install
     system "meson", "setup", "build",
@@ -24,9 +28,47 @@ class Recoll < Formula
     system "ninja", "-C", "build"
     system "ninja", "-C", "build", "install"
     
-    # Copy the .app bundle to /Applications
+    # Install the .app bundle
     prefix.install "build/qtgui/recoll.app"
-    (prefix/"recoll.app").cp_r "/Applications/"
+
+    # Fix dynamic library loading
+    frameworks_dir = "#{prefix}/recoll.app/Contents/Frameworks"
+    mkdir_p frameworks_dir
+    dylib = "#{lib}/librecoll.39.dylib"
+    cp dylib, frameworks_dir
+    dylib_name = File.basename(dylib)
+    system "install_name_tool", "-change",
+           "@rpath/#{dylib_name}",
+           "@executable_path/../Frameworks/#{dylib_name}",
+           "#{prefix}/recoll.app/Contents/MacOS/recoll"
+  end
+
+  def caveats
+    python_fix_msg = if Dir.exist?("#{prefix}/usr/local/lib/python3.13/site-packages")
+      <<~EOS
+        Some Python extensions are in the wrong location. To fix this, run:
+          sudo mv #{prefix}/usr/local/lib/python3.13/site-packages/* #{prefix}/lib/python3.13/site-packages/
+          sudo rm -rf #{prefix}/usr/local
+      EOS
+    end
+
+    <<~EOS
+      Recoll.app was installed to:
+        #{prefix}
+
+      To link the application to default Homebrew App location:
+        osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/recoll.app" at posix file "/Applications" with properties {name:"Recoll.app"}'
+
+      To enable image tags indexing, install ExifTool:
+        cpan Image::ExifTool
+
+      For full functionality, install these Python modules:
+        pip3 install --user --break-system-packages lxml mutagen py7zr pyyaml
+
+      Note: Python modules will be installed in ~/Library/Python/3.13/lib/python/site-packages
+
+      #{python_fix_msg}
+    EOS
   end
 
   test do
