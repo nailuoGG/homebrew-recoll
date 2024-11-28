@@ -30,7 +30,7 @@ class Recoll < Formula
     
     # Copy the .app bundle to /Applications
     prefix.install "build/qtgui/recoll.app"
-    (prefix/"recoll.app").cp_r "/Applications/"
+    FileUtils.cp_r "#{prefix}/recoll.app", "/Applications"
 
     # Fix Python extensions location (meson bug workaround)
     if Dir.exist?("#{prefix}/usr/local/lib/python3.13/site-packages")
