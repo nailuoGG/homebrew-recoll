@@ -42,6 +42,12 @@ class Recoll < Formula
     end
 
     <<~EOS
+      Recoll.app was installed to:
+        #{prefix}
+
+      To link the application to default Homebrew App location:
+        osascript -e 'tell application "Finder" to make alias file to posix file "#{prefix}/recoll.app" at posix file "/Applications" with properties {name:"Recoll.app"}'
+
       To enable image tags indexing, install ExifTool:
         cpan Image::ExifTool
 
@@ -49,9 +55,6 @@ class Recoll < Formula
         pip3 install --user --break-system-packages lxml mutagen py7zr pyyaml
 
       Note: Python modules will be installed in ~/Library/Python/3.13/lib/python/site-packages
-
-      To create an application shortcut in /Applications, run:
-        ln -s #{prefix}/recoll.app /Applications/
 
       #{python_fix_msg}
     EOS
