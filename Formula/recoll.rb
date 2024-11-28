@@ -28,9 +28,9 @@ class Recoll < Formula
     system "ninja", "-C", "build"
     system "ninja", "-C", "build", "install"
     
-    # Copy the .app bundle to /Applications
+    # Link the .app bundle to Applications
     prefix.install "build/qtgui/recoll.app"
-    FileUtils.cp_r "#{prefix}/recoll.app", "/Applications"
+    Applications.install_symlink prefix/"recoll.app"
 
     # Fix Python extensions location (meson bug workaround)
     if Dir.exist?("#{prefix}/usr/local/lib/python3.13/site-packages")
