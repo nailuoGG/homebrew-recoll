@@ -1,6 +1,6 @@
 cask 'recoll' do
-  version '1.38.1-20240516-375bcbc0'
-  sha256 '5c15e9000666c7019d641e62e9a3f751c35f44cd0009da76cdf0e31eceb9353f'
+  version 'recoll-1.43.4-20250808-51dfd558.dmg'
+  sha256 'bef4f70d5a7f90cfee4e9bd0781d4193bd1853bdb741e93f1e36dda9ebf9bd04'
   name 'Recoll'
   desc 'Full-text search for your desktop.'
 
