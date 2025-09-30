@@ -1,0 +1,53 @@
+name: Update Recoll
+
+on:
+  schedule:
+    - cron: '0 0 * * 5'  # Every Friday at 00:00 UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update-recoll:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Check for updates
+        id: check_updates
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/check-version.sh
+
+      - name: Update cask file
+        if: steps.check_updates.outputs.update_needed == 'true'
+        run: |
+          ./scripts/update-cask.sh \
+            "${{ steps.check_updates.outputs.version }}" \
+            "${{ steps.check_updates.outputs.sha256 }}"
+
+      - name: Create Pull Request
+        if: steps.check_updates.outputs.update_needed == 'true'
+        run: |
+          BRANCH_NAME="update-recoll-$(date +%Y%m%d-%H%M%S)"
+          ./scripts/create-pr.sh \
+            "${{ steps.check_updates.outputs.version }}" \
+            "${{ steps.check_updates.outputs.current_version }}" \
+            "$BRANCH_NAME"
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.check_updates.outputs.update_needed }}" == "true" ]; then
+            echo "✅ Update completed successfully!"
+            echo "Updated Recoll from ${{ steps.check_updates.outputs.current_version }} to ${{ steps.check_updates.outputs.version }}"
+          else
+            echo "ℹ️ No update needed. Recoll is already up to date."
+          fi
