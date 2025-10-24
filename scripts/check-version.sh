@@ -1,110 +1,119 @@
 #!/bin/bash
 
 # Script to check for latest Recoll version from download page
+# Following Zen of Python: Simple, explicit, readable
 # Usage: ./check-version.sh [cask_file_path]
 
-set -e
+set -euo pipefail
 
-CASK_FILE="${1:-Casks/recoll.rb}"
-DOWNLOAD_URL="https://www.recoll.org/downloads/macos/"
+# Source shared utilities
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils.sh
+source "$SCRIPT_DIR/utils.sh"
 
-echo "Checking for latest Recoll version..."
+# =============================================================================
+# CONFIGURATION (Explicit is better than implicit)
+# =============================================================================
 
-# Get current version from cask file
-get_current_version() {
-    if [ ! -f "$CASK_FILE" ]; then
-        echo "Error: Cask file not found at $CASK_FILE" >&2
-        exit 1
-    fi
+readonly CASK_FILE="${1:-$DEFAULT_CASK_FILE}"
+
+# =============================================================================
+# MAIN FUNCTIONS (Simple is better than complex)
+# =============================================================================
+
+display_version_info() {
+    local current_version="$1"
+    local latest_version="$2"
     
-    local current_version
-    current_version=$(grep "version '" "$CASK_FILE" | sed "s/.*version '\(.*\)'.*/\1/")
-    echo "$current_version"
+    log_info "Current version: $current_version"
+    log_info "Latest version:  $latest_version"
 }
 
-# Get latest version from download page
-get_latest_version() {
-    echo "Fetching download page..." >&2
-    local download_page
-    download_page=$(curl -s "$DOWNLOAD_URL")
-    
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to fetch download page" >&2
-        exit 1
-    fi
-    
-    # Extract the latest version from the HTML table
-    # Look for the last DMG file in the table (most recent)
-    local latest_version
-    latest_version=$(echo "$download_page" | grep -o 'recoll-[0-9]\+\.[0-9]\+\.[0-9]\+-[0-9]\{8\}-[a-f0-9]\{8\}\.dmg' | tail -1 | sed 's/recoll-\(.*\)\.dmg/\1/')
-    
-    if [ -z "$latest_version" ]; then
-        echo "Error: Could not extract latest version from download page" >&2
-        exit 1
-    fi
-    
-    echo "$latest_version"
-}
-
-# Get SHA256 hash for a specific version
-get_sha256_hash() {
+output_results() {
     local version="$1"
-    local sha256_url="https://www.recoll.org/downloads/macos/recoll-${version}.dmg.sha256"
+    local current_version="$2"
+    local sha256="$3"
+    local update_needed="$4"
     
-    echo "Fetching SHA256 hash from: $sha256_url" >&2
-    local sha256_hash
-    sha256_hash=$(curl -s "$sha256_url" | cut -d' ' -f1)
+    # Output for both GitHub Actions and local testing
+    set_github_output "version" "$version"
+    set_github_output "current_version" "$current_version"
+    set_github_output "update_needed" "$update_needed"
     
-    if [ -z "$sha256_hash" ]; then
-        echo "Error: Could not fetch SHA256 hash for version $version" >&2
+    if [[ "$update_needed" == "true" ]]; then
+        set_github_output "sha256" "$sha256"
+    fi
+}
+
+check_for_update() {
+    local current_version="$1"
+    
+    # Fetch download page content
+    local download_page
+    if ! download_page=$(fetch_webpage "$DOWNLOAD_URL"); then
+        return 1
+    fi
+    
+    # Extract versions
+    local latest_version
+    if ! latest_version=$(extract_latest_version "$download_page"); then
+        return 1
+    fi
+    
+    # Display version information
+    display_version_info "$current_version" "$latest_version"
+    
+    # Check if update is needed
+    if [[ "$latest_version" != "$current_version" ]]; then
+        log_info "Update needed: $current_version -> $latest_version"
+        
+        # Fetch SHA256 for new version
+        local sha256_hash
+        if ! sha256_hash=$(fetch_sha256_hash "$latest_version"); then
+            log_error "Failed to fetch SHA256 hash for version $latest_version"
+            return 1
+        fi
+        
+        output_results "$latest_version" "$current_version" "$sha256_hash" "true"
+        log_success "Update information prepared successfully"
+    else
+        log_info "No update needed. Current version is up to date."
+        output_results "$current_version" "$current_version" "" "false"
+        log_success "Version check completed"
+    fi
+    
+    return 0
+}
+
+# =============================================================================
+# MAIN EXECUTION (Flat is better than nested)
+# =============================================================================
+
+main() {
+    # Setup error handling
+    setup_error_handling
+    
+    log_info "Starting Recoll version check..."
+    
+    # Validate inputs early (Flat is better than nested)
+    validate_file_exists "$CASK_FILE" || exit 1
+    
+    # Extract current version
+    local current_version
+    if ! current_version=$(extract_current_version "$CASK_FILE"); then
+        log_error "Failed to extract current version from $CASK_FILE"
         exit 1
     fi
     
-    echo "$sha256_hash"
-}
-
-# Main execution
-main() {
-    local current_version
-    local latest_version
-    local sha256_hash
-    
-    current_version=$(get_current_version)
-    latest_version=$(get_latest_version)
-    
-    echo "Current version: $current_version"
-    echo "Latest version: $latest_version"
-    
-    if [ "$latest_version" != "$current_version" ]; then
-        echo "Update needed: $current_version -> $latest_version"
-        sha256_hash=$(get_sha256_hash "$latest_version")
-        
-        # Output for GitHub Actions (if GITHUB_OUTPUT exists) or local testing
-        if [ -n "$GITHUB_OUTPUT" ]; then
-            echo "version=$latest_version" >> "$GITHUB_OUTPUT"
-            echo "current_version=$current_version" >> "$GITHUB_OUTPUT"
-            echo "sha256=$sha256_hash" >> "$GITHUB_OUTPUT"
-            echo "update_needed=true" >> "$GITHUB_OUTPUT"
-        else
-            echo "version=$latest_version"
-            echo "current_version=$current_version"
-            echo "sha256=$sha256_hash"
-            echo "update_needed=true"
-        fi
-    else
-        echo "No update needed. Current version is up to date."
-        # Output for GitHub Actions (if GITHUB_OUTPUT exists) or local testing
-        if [ -n "$GITHUB_OUTPUT" ]; then
-            echo "version=$current_version" >> "$GITHUB_OUTPUT"
-            echo "current_version=$current_version" >> "$GITHUB_OUTPUT"
-            echo "update_needed=false" >> "$GITHUB_OUTPUT"
-        else
-            echo "version=$current_version"
-            echo "current_version=$current_version"
-            echo "update_needed=false"
-        fi
+    # Check for updates
+    if ! check_for_update "$current_version"; then
+        log_error "Version check failed"
+        exit 1
     fi
+    
+    log_success "Version check completed successfully"
 }
 
+# Execute main function with all arguments
 main "$@"
 

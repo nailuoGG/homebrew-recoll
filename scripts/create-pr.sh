@@ -1,73 +1,228 @@
 #!/bin/bash
 
 # Script to create a Pull Request for Recoll update
+# Following Zen of Python: Simple, explicit, readable
 # Usage: ./create-pr.sh <version> <current_version> <branch_name>
 
-set -e
+set -euo pipefail
 
-VERSION="$1"
-CURRENT_VERSION="$2"
-BRANCH_NAME="$3"
+# Source shared utilities
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils.sh
+source "$SCRIPT_DIR/utils.sh"
 
-if [ -z "$VERSION" ] || [ -z "$CURRENT_VERSION" ] || [ -z "$BRANCH_NAME" ]; then
-    echo "Usage: $0 <version> <current_version> <branch_name>"
-    exit 1
-fi
+# =============================================================================
+# CONFIGURATION (Explicit is better than implicit)
+# =============================================================================
 
-echo "Creating Pull Request for Recoll update..."
+readonly NEW_VERSION="$1"
+readonly CURRENT_VERSION="$2"
+readonly BRANCH_NAME="$3"
+readonly DEFAULT_CASK_FILE="Casks/recoll.rb"
 
-# Create branch and commit changes
-create_branch_and_commit() {
-    echo "Creating branch: $BRANCH_NAME"
-    git checkout -b "$BRANCH_NAME"
-    
-    echo "Adding changes..."
-    git add Casks/recoll.rb
-    
-    echo "Committing changes..."
-    git commit -m "Update Recoll to version $VERSION
+# =============================================================================
+# VALIDATION (Errors should never pass silently)
+# =============================================================================
 
-- Updated version from $CURRENT_VERSION to $VERSION
-- Updated SHA256 hash for verification
-
-Automated update via GitHub Actions"
-    
-    echo "Pushing branch..."
-    git push origin "$BRANCH_NAME"
+validate_pr_inputs() {
+    validate_not_empty "$NEW_VERSION" "New version" || return 1
+    validate_not_empty "$CURRENT_VERSION" "Current version" || return 1
+    validate_not_empty "$BRANCH_NAME" "Branch name" || return 1
+    return 0
 }
 
-# Create Pull Request using GitHub CLI
-create_pull_request() {
-    local pr_title="Update Recoll to version $VERSION"
-    local pr_body="## Update Recoll to version $VERSION
+display_pr_info() {
+    log_info "Creating Pull Request for Recoll update..."
+    log_info "New version:     $NEW_VERSION"
+    log_info "Current version: $CURRENT_VERSION"
+    log_info "Branch name:     $BRANCH_NAME"
+}
 
-This PR updates the Recoll cask to the latest version.
+# =============================================================================
+# GIT OPERATIONS (Simple is better than complex)
+# =============================================================================
+
+create_feature_branch() {
+    log_info "Creating feature branch: $BRANCH_NAME"
+    
+    if ! git checkout -b "$BRANCH_NAME"; then
+        log_error "Failed to create branch: $BRANCH_NAME"
+        return 1
+    fi
+    
+    log_success "Branch created successfully"
+    return 0
+}
+
+stage_and_commit_changes() {
+    log_info "Staging cask file changes..."
+    
+    if ! git add "$DEFAULT_CASK_FILE"; then
+        log_error "Failed to stage cask file: $DEFAULT_CASK_FILE"
+        return 1
+    fi
+    
+    log_info "Committing changes..."
+    
+    local commit_message
+    commit_message="chore: update Recoll to version $NEW_VERSION
+
+- Updated version from $CURRENT_VERSION to $NEW_VERSION
+- Updated SHA256 hash for verification
+
+Automated update via GitHub Actions
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+    
+    if ! git commit -m "$commit_message"; then
+        log_error "Failed to commit changes"
+        return 1
+    fi
+    
+    log_success "Changes committed successfully"
+    return 0
+}
+
+push_branch_to_remote() {
+    log_info "Pushing branch to remote..."
+    
+    if ! git push origin "$BRANCH_NAME"; then
+        log_error "Failed to push branch to remote: $BRANCH_NAME"
+        return 1
+    fi
+    
+    log_success "Branch pushed successfully"
+    return 0
+}
+
+# =============================================================================
+# PULL REQUEST OPERATIONS (Readability counts)
+# =============================================================================
+
+create_commit_message() {
+    echo "chore: update Recoll to version $NEW_VERSION
+
+- Updated version from $CURRENT_VERSION to $NEW_VERSION
+- Updated SHA256 hash for verification
+
+Automated update via GitHub Actions
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+}
+
+create_pull_request_title() {
+    echo "chore: update Recoll to version $NEW_VERSION"
+}
+
+create_pull_request_body() {
+    cat << EOF
+## Summary
+
+Update Recoll cask to version \`$NEW_VERSION\`.
 
 **Changes:**
-- Updated version from \`$CURRENT_VERSION\` to \`$VERSION\`
+- Updated version from \`$CURRENT_VERSION\` to \`$NEW_VERSION\`
 - Updated SHA256 hash for verification
 
 **Source:** [Recoll macOS Downloads](https://www.recoll.org/downloads/macos/)
 
-This update was automatically generated by GitHub Actions."
+## Test plan
 
-    echo "Creating Pull Request..."
-    gh pr create \
+- [ ] Verify the new version downloads and installs correctly
+- [ ] Test basic Recoll functionality after installation
+- [ ] Check that the app launches without issues
+
+This update was automatically generated by GitHub Actions.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+EOF
+}
+
+create_github_pull_request() {
+    log_info "Creating GitHub Pull Request..."
+    
+    local pr_title
+    local pr_body
+    
+    pr_title=$(create_pull_request_title)
+    pr_body=$(create_pull_request_body)
+    
+    if ! gh pr create \
         --title "$pr_title" \
         --body "$pr_body" \
         --base master \
-        --head "$BRANCH_NAME"
-}
-
-# Main execution
-main() {
-    create_branch_and_commit
-    create_pull_request
+        --head "$BRANCH_NAME"; then
+        log_error "Failed to create Pull Request"
+        return 1
+    fi
     
-    echo "✅ Pull Request created successfully!"
-    echo "Branch: $BRANCH_NAME"
-    echo "Version: $CURRENT_VERSION -> $VERSION"
+    log_success "Pull Request created successfully"
+    return 0
 }
 
+# =============================================================================
+# MAIN EXECUTION (Flat is better than nested)
+# =============================================================================
+
+create_update_pull_request() {
+    # Create and push branch
+    if ! create_feature_branch; then
+        return 1
+    fi
+    
+    if ! stage_and_commit_changes; then
+        return 1
+    fi
+    
+    if ! push_branch_to_remote; then
+        return 1
+    fi
+    
+    # Create pull request
+    if ! create_github_pull_request; then
+        return 1
+    fi
+    
+    return 0
+}
+
+display_completion_summary() {
+    log_success "Pull Request workflow completed successfully!"
+    log_info "Branch:  $BRANCH_NAME"
+    log_info "Update:  $CURRENT_VERSION → $NEW_VERSION"
+}
+
+main() {
+    # Setup error handling
+    setup_error_handling
+    
+    # Validate inputs early
+    validate_pr_inputs || exit 1
+    
+    # Display operation information
+    display_pr_info
+    
+    # Create the pull request
+    if ! create_update_pull_request; then
+        log_error "Failed to create Pull Request"
+        exit 1
+    fi
+    
+    # Display completion summary
+    display_completion_summary
+}
+
+# Show usage if insufficient arguments
+if [[ $# -lt 3 ]]; then
+    log_error "Insufficient arguments provided"
+    log_error "Usage: $0 <new_version> <current_version> <branch_name>"
+    exit 1
+fi
+
+# Execute main function with all arguments
 main "$@"
 
