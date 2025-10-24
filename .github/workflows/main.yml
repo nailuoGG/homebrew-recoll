@@ -39,7 +39,7 @@ jobs:
       - name: Verify cask syntax
         run: |
           # Validate cask file syntax
-          brew audit --strict --online Casks/recoll.rb
+          brew audit --strict --online recoll
 
       - name: Install Recoll cask
         run: |
