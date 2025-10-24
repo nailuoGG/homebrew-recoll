@@ -1,67 +1,29 @@
 #+begin_html
-<h1 align="center">Recoll</h1>
+<h1 align="center">Recoll Homebrew Tap</h1>
 #+end_html
 
-** Recoll Homebrew Formula
+** Lazy Homebrew install for Recoll on macOS
 
-[[https://www.lesbonscomptes.com/recoll/][Recoll]] is a full-text search tool for Unix/Linux systems. This repository contains the Homebrew formula for Recoll, allowing you to easily install and manage Recoll on macOS using Homebrew.
+This is just a convenience tap that packages the official Recoll macOS builds 
+as a Homebrew cask. No compilation from source - just the official binaries.
 
-** Installation
+** Quick Install
 
-To install Recoll using Homebrew, follow these steps:
+#+begin_src shell
+brew tap nailuoGG/recoll
+brew install --cask recoll
+#+end_src
 
-1. Open a terminal.
-2. Make sure you have Homebrew installed. If not, you can install it by following the instructions at [[https://brew.sh/][brew.sh]].
-3. Tap into this repository by running the following command:
+That's it. Run ~recoll~ to start searching.
 
-   #+begin_src shell
-   brew tap nailuoGG/recoll
-   #+end_src
+** Details
 
-4. Install Recoll by running the following command:
+- Uses official binaries from [[https://www.recoll.org/downloads/macos/]]
+- No source compilation (QT dependencies are complex)
+- Packages are not digitally signed (same as official)
+- Automated updates via GitHub Actions
 
-   We can install pre-compiled versions of the software, and these files are sourced from the official documentation: https://www.lesbonscomptes.com/recoll/pages/recoll-macos.html.
+** Links
 
-   Please note that the packages from the official source are not digitally signed.
-
-   #+begin_src shell
-   brew install --cask recoll
-   #+end_src
-
-   This repository doesn't offer an option to compile from source because it requires QT, and setting up the build environment on the macOS command line is complicate.
-
-5. After the installation is complete, you can run Recoll by typing `recoll` in the terminal.
-
-** Usage
-
-Recoll provides a powerful command-line interface for searching and managing your indexed documents. You can find detailed information on how to use Recoll in the [[https://www.lesbonscomptes.com/recoll/usermanual/usermanual.html][official Recoll documentation]].
-
-Here are a few common commands to get you started:
-
-- To start indexing your documents, use the following command:
-
-  #+begin_src shell
-  recollindex
-  #+end_src
-
-- To search for a specific term, use the following command:
-
-  #+begin_src shell
-  recoll -t <term>
-  #+end_src
-
-** Contributing
-
-If you encounter any issues with the Recoll Homebrew formula or would like to contribute to its development, please visit the [[https://github.com/nailuoGG/homebrew-recoll][GitHub repository]] and open an issue or submit a pull request.
-
-** License
-
-[[https://framagit.org/medoc92/recoll][Recoll]] is free, open source, and licensed under the GPL. Please refer to the official Recoll documentation for more details.
-
-** Acknowledgements
-
-The Recoll Homebrew formula in this repository is maintained by [[https://github.com/nailuoGG][nailuoGG]]. Special thanks to the Recoll development team for creating this fantastic search tool.
-
-** Disclaimer
-
-This repository is not officially affiliated with the Recoll project.
+- [[https://www.recoll.org/][Official Recoll Site]]
+- [[https://github.com/nailuoGG/homebrew-recoll][This Repository]]
