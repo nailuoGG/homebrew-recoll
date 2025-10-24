@@ -36,6 +36,8 @@ jobs:
 
       - name: Create Pull Request
         if: steps.check_updates.outputs.update_needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           BRANCH_NAME="update-recoll-$(date +%Y%m%d-%H%M%S)"
           ./scripts/create-pr.sh \
