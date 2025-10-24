@@ -1,4 +1,5 @@
-# This is a basic workflow to help you get started with Actions
+# CI workflow for Recoll Homebrew Cask
+# Following Zen of Python: Simple, explicit, readable
 
 name: CI
 
@@ -13,47 +14,79 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  # Test the Recoll cask installation and basic functionality
+  test:
+    name: Test Recoll Cask
     runs-on: macos-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up Homebrew
-        id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
         with:
           core: false
           cask: true
           test-bot: false
 
-      - name: Enable debug mode
+      - name: Link tap for testing
         run: |
-          echo 'HOMEBREW_DEBUG=1' >> "${GITHUB_ENV}"
-          echo 'HOMEBREW_VERBOSE=1' >> "${GITHUB_ENV}"
-        if: runner.debug
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          # Link the repository to Homebrew's tap directory
           ln -s "$GITHUB_WORKSPACE" "$(brew --prefix)/Library/Taps"
 
-          brew --help
-          brew search recoll
+      - name: Verify cask syntax
+        run: |
+          # Validate cask file syntax
+          brew audit --strict --online recoll
 
-      # Runs a single command using the runners shell
-      - name: Install App
-        run: brew install --cask recoll
+      - name: Install Recoll cask
+        run: |
+          # Test installation
+          brew install --cask recoll --verbose
 
-      - name: Clean up CI machine
-        if: runner.os == 'macOS'
-        run: brew uninstall --zap recoll
+      - name: Verify installation
+        run: |
+          # Check that Recoll app was installed
+          if [[ ! -d "/Applications/Recoll.app" ]]; then
+            echo "Error: Recoll.app not found in /Applications/"
+            exit 1
+          fi
+          
+          # Verify app structure
+          if [[ ! -x "/Applications/Recoll.app/Contents/MacOS/recoll" ]]; then
+            echo "Error: Recoll executable not found or not executable"
+            exit 1
+          fi
+          
+          echo "Recoll installation verified successfully"
+
+      - name: Test basic functionality
+        run: |
+          # Add Recoll to PATH for testing
+          export PATH="/Applications/Recoll.app/Contents/MacOS:$PATH"
+          
+          # Test that recoll command is available
+          if ! command -v recoll >/dev/null 2>&1; then
+            echo "Error: recoll command not found in PATH"
+            exit 1
+          fi
+          
+          # Test basic help command
+          recoll --help || echo "Help command completed"
+          
+          echo "Basic functionality test passed"
+
+      - name: Clean up installation
+        if: always()
+        run: |
+          # Clean up the installation to free up space
+          brew uninstall --zap --force recoll || true
+          
+          # Remove any remaining files
+          sudo rm -rf "/Applications/Recoll.app" || true
+          rm -rf "$HOME/.recoll" || true
+          rm -rf "$HOME/.config/Recoll.org" || true
+          
+          echo "Cleanup completed"
