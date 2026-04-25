@@ -83,10 +83,38 @@ jobs:
         run: |
           # Clean up the installation to free up space
           brew uninstall --zap --force recoll || true
-          
+
           # Remove any remaining files
           sudo rm -rf "/Applications/Recoll.app" || true
           rm -rf "$HOME/.recoll" || true
           rm -rf "$HOME/.config/Recoll.org" || true
-          
+
+          echo "Cleanup completed"
+
+  test-formula:
+    name: Test Recoll Formula
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Audit Formula
+        run: brew audit --formula ./Formula/recoll.rb --online
+
+      - name: Build and install
+        run: brew install --build-from-source --formula ./Formula/recoll.rb
+
+      - name: Test installation
+        run: brew test --formula ./Formula/recoll.rb
+
+      - name: Clean up
+        if: always()
+        run: |
+          brew uninstall --force recoll || true
+          rm -rf "$HOME/.recoll" || true
           echo "Cleanup completed"
