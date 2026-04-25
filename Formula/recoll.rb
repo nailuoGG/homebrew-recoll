@@ -24,30 +24,29 @@ class Recoll < Formula
   depends_on "xapian"
 
   def install
-    # Fix missing IOKit framework for power status on macOS
-    iokit_line = "    librecolldeps += dependency('IOKit', required: true)"
+    # Upstream meson.build omits IOKit, needed by powerstatus.cpp on macOS
+    iokit_dep = "    librecolldeps += dependency('IOKit', required: true)"
     inreplace "meson.build",
               "librecolldeps += core_services  # Add the CoreServices framework as a dependency",
-              "librecolldeps += core_services  # Add the CoreServices framework as a dependency\n#{iokit_line}"
+              "librecolldeps += core_services  # Add the CoreServices framework as a dependency\n#{iokit_dep}"
 
-    # Fix rclgrep missing iconv and macOS framework deps
-    iconv_dep = "dependency('iconv', method: 'auto')"
-    inreplace "rclgrep/meson.build",
-              "rclgrep_deps = [libxml, libxslt, libz]",
-              "rclgrep_deps = [libxml, libxslt, libz, #{iconv_dep}]"
-    rclgrep_macos = [
-      "    rclgrep_deps += libmagic",
-      "    if(apple_core_services_found)",
-      "        rclgrep_deps += core_services",
-      "        rclgrep_deps += dependency('IOKit', required: true)",
-      "    endif",
-    ].join("\n")
-    inreplace "rclgrep/meson.build",
-              "    rclgrep_deps += libmagic",
-              rclgrep_macos
-    inreplace "rclgrep/meson.build",
-              "    '../utils/zlibut.cpp',",
+    # Upstream rclgrep/meson.build misses iconv, CoreServices/IOKit, and
+    # finderxattr.cpp (only added to librecoll, not rclgrep's source list)
+    inreplace "rclgrep/meson.build" do |s|
+      s.gsub! "rclgrep_deps = [libxml, libxslt, libz]",
+              "rclgrep_deps = [libxml, libxslt, libz, dependency('iconv', method: 'auto')]"
+      macos_patch = <<~MESON
+        rclgrep_deps += libmagic
+        if(apple_core_services_found)
+            rclgrep_deps += core_services
+            rclgrep_deps += dependency('IOKit', required: true)
+        endif
+      MESON
+      s.gsub! "    rclgrep_deps += libmagic",
+              macos_patch
+      s.gsub! "    '../utils/zlibut.cpp',",
               "    '../utils/zlibut.cpp',\n    '../internfile/finderxattr.cpp',"
+    end
 
     args = %w[
       -Dpython-module=true

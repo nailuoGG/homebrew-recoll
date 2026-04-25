@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 
 source "$(dirname "$0")/utils.sh"
 
@@ -17,15 +16,14 @@ update_formula() {
 
     log_info "Updating Formula to version $version..."
 
-    sed -i.bak "s|url \"https://www.recoll.org/recoll-.*\.tar\.gz\"|url \"https://www.recoll.org/recoll-${version}.tar.gz\"|" "$FORMULA_FILE"
-    sed -i.bak "s|sha256 \".*\"|sha256 \"${sha256}\"|" "$FORMULA_FILE"
-    rm -f "${FORMULA_FILE}.bak"
+    sed -i '' -e "s|url \"https://www.recoll.org/recoll-.*\.tar\.gz\"|url \"https://www.recoll.org/recoll-${version}.tar.gz\"|" \
+              -e "s|sha256 \".*\"|sha256 \"${sha256}\"|" "$FORMULA_FILE"
 
-    local updated_sha
-    updated_sha=$(grep 'sha256 "' "$FORMULA_FILE" | grep -oE '[a-f0-9]{64}')
+    local updated_ver
+    updated_ver=$(extract_formula_version "$FORMULA_FILE")
 
-    if [[ "$updated_sha" != "$sha256" ]]; then
-        log_error "SHA256 mismatch after update: expected $sha256, got $updated_sha"
+    if [[ "$updated_ver" != "$version" ]]; then
+        log_error "Version mismatch after update: expected $version, got $updated_ver"
         restore_backup "$FORMULA_FILE"
         return 1
     fi
