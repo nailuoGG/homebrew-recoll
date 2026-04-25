@@ -1,0 +1,3 @@
+# Allow shellcheck to follow source directives from external files
+external-sources=true
+source-path=scripts
