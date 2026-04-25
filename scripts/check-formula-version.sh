@@ -3,7 +3,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/utils.sh"
 
-readonly FORMULA_FILE="Formula/recoll-from-source.rb"
+readonly FORMULA_FILE="Formula/recoll.rb"
 readonly FORMULA_DOWNLOAD_PAGE="https://www.recoll.org/pages/download.html"
 readonly SOURCE_SHA256_TEMPLATE="https://www.recoll.org/recoll-%s.tar.gz.sha256"
 
