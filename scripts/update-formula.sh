@@ -3,7 +3,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/utils.sh"
 
-readonly FORMULA_FILE="Formula/recoll.rb"
+readonly FORMULA_FILE="Formula/recoll-from-source.rb"
 
 update_formula() {
     local version="$1"

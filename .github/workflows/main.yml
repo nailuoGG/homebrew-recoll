@@ -110,20 +110,20 @@ jobs:
           rm -rf "$tap_dir/homebrew-recoll"
           ln -s "$GITHUB_WORKSPACE" "$tap_dir/homebrew-recoll"
           # Verify the linked Formula matches the PR branch
-          head -5 Formula/recoll.rb
+          head -5 Formula/recoll-from-source.rb
 
       - name: Audit Formula
-        run: brew audit --formula nailuoGG/recoll/recoll --online
+        run: brew audit --formula nailuoGG/recoll/recoll-from-source --online
 
       - name: Build and install
-        run: brew install --formula --build-from-source nailuoGG/recoll/recoll
+        run: brew install --build-from-source nailuoGG/recoll/recoll-from-source
 
       - name: Test installation
-        run: brew test --formula nailuoGG/recoll/recoll
+        run: brew test nailuoGG/recoll/recoll-from-source
 
       - name: Clean up
         if: always()
         run: |
-          brew uninstall --formula --force recoll || true
+          brew uninstall --force recoll-from-source || true
           rm -rf "$HOME/.recoll" || true
           echo "Cleanup completed"

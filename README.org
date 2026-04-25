@@ -21,7 +21,7 @@ Quick install with official macOS binary, no compilation needed.
 
 #+begin_src shell
 brew tap nailuoGG/recoll
-brew install recoll
+brew install recoll-from-source
 #+end_src
 
 Compile from source with Qt6 GUI, Python module, and fsevents support.

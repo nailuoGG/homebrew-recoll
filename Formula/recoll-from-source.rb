@@ -1,4 +1,4 @@
-class Recoll < Formula
+class RecollFromSource < Formula
   desc "Full-text search for your desktop"
   homepage "https://www.recoll.org/"
   url "https://www.recoll.org/recoll-1.43.14.tar.gz"
