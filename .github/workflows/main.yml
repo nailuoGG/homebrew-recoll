@@ -103,14 +103,18 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
+      - name: Link tap for testing
+        run: |
+          ln -s "$GITHUB_WORKSPACE" "$(brew --repository)/Library/Taps/nailuoGG/homebrew-recoll"
+
       - name: Audit Formula
-        run: brew audit --formula ./Formula/recoll.rb --online
+        run: brew audit --formula nailuoGG/recoll/recoll --online
 
       - name: Build and install
-        run: brew install --build-from-source --formula ./Formula/recoll.rb
+        run: brew install --build-from-source nailuoGG/recoll/recoll
 
       - name: Test installation
-        run: brew test --formula ./Formula/recoll.rb
+        run: brew test nailuoGG/recoll/recoll
 
       - name: Clean up
         if: always()
