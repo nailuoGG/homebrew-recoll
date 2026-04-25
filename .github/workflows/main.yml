@@ -116,14 +116,14 @@ jobs:
         run: brew audit --formula nailuoGG/recoll/recoll --online
 
       - name: Build and install
-        run: brew install --build-from-source nailuoGG/recoll/recoll
+        run: brew install --formula --build-from-source nailuoGG/recoll/recoll
 
       - name: Test installation
-        run: brew test nailuoGG/recoll/recoll
+        run: brew test --formula nailuoGG/recoll/recoll
 
       - name: Clean up
         if: always()
         run: |
-          brew uninstall --force recoll || true
+          brew uninstall --formula --force recoll || true
           rm -rf "$HOME/.recoll" || true
           echo "Cleanup completed"
