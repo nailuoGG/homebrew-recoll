@@ -105,7 +105,12 @@ jobs:
 
       - name: Link tap for testing
         run: |
-          ln -s "$GITHUB_WORKSPACE" "$(brew --repository)/Library/Taps/nailuoGG/homebrew-recoll"
+          tap_dir="$(brew --repository)/Library/Taps/nailuoGG"
+          mkdir -p "$tap_dir"
+          rm -rf "$tap_dir/homebrew-recoll"
+          ln -s "$GITHUB_WORKSPACE" "$tap_dir/homebrew-recoll"
+          # Verify the linked Formula matches the PR branch
+          head -5 Formula/recoll.rb
 
       - name: Audit Formula
         run: brew audit --formula nailuoGG/recoll/recoll --online
