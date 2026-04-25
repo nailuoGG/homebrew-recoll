@@ -137,6 +137,6 @@ jobs:
       - name: Clean up
         if: always()
         run: |
-          brew uninstall --force recoll || true
+          brew uninstall --force nailuoGG/recoll/recoll || true
           rm -rf "$HOME/.recoll" || true
           echo "Cleanup completed"

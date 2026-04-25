@@ -68,8 +68,8 @@ class Recoll < Formula
     system "meson", "compile", "-C", "build", "--verbose"
     system "meson", "install", "-C", "build"
 
-    # Build .app bundle with macdeployqt
-    build_app_bundle
+    # Build .app bundle with macdeployqt (macOS only)
+    build_app_bundle if OS.mac?
   end
 
   def build_app_bundle

@@ -1,6 +1,9 @@
 #!/bin/bash
 
+set -euo pipefail
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=utils.sh
 source "$SCRIPT_DIR/utils.sh"
 
 readonly FORMULA_FILE="Formula/recoll.rb"
@@ -18,7 +21,7 @@ update_formula() {
     log_info "Updating Formula to version $version..."
 
     perl -pi -e "s|url \"https://www.recoll.org/recoll-.*\\.tar\\.gz\"|url \"https://www.recoll.org/recoll-${version}.tar.gz\"|" \
-             -e "s|sha256 \".*\"|sha256 \"${sha256}\"|" "$FORMULA_FILE"
+             -e "s|^  sha256 \".*\"$|  sha256 \"${sha256}\"|" "$FORMULA_FILE"
 
     local updated_ver
     updated_ver=$(extract_formula_version "$FORMULA_FILE")

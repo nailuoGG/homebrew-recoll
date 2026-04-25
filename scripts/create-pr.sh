@@ -19,6 +19,7 @@ readonly NEW_VERSION="$1"
 readonly CURRENT_VERSION="$2"
 readonly BRANCH_NAME="$3"
 readonly DEFAULT_CASK_FILE="Casks/recoll.rb"
+readonly DEFAULT_FORMULA_FILE="Formula/recoll.rb"
 
 # =============================================================================
 # VALIDATION (Errors should never pass silently)
@@ -55,10 +56,26 @@ create_feature_branch() {
 }
 
 stage_and_commit_changes() {
-    log_info "Staging cask file changes..."
-    
-    if ! git add "$DEFAULT_CASK_FILE"; then
-        log_error "Failed to stage cask file: $DEFAULT_CASK_FILE"
+    log_info "Staging changed files..."
+
+    local has_changes=false
+
+    if git diff --quiet -- "$DEFAULT_CASK_FILE" 2>/dev/null; then
+        log_info "No changes to Cask file"
+    else
+        git add "$DEFAULT_CASK_FILE"
+        has_changes=true
+    fi
+
+    if git diff --quiet -- "$DEFAULT_FORMULA_FILE" 2>/dev/null; then
+        log_info "No changes to Formula file"
+    else
+        git add "$DEFAULT_FORMULA_FILE"
+        has_changes=true
+    fi
+
+    if [[ "$has_changes" != "true" ]]; then
+        log_error "No file changes to commit"
         return 1
     fi
     
