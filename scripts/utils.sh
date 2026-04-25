@@ -200,7 +200,7 @@ extract_formula_version() {
     validate_file_exists "$formula_file" "Formula file" || return 1
 
     local version
-    version=$(grep -E '^\s+url "' "$formula_file" | grep -oE 'recoll-[0-9]+\.[0-9]+\.[0-9]+' | sed 's/recoll-//')
+    version=$(grep -E '^[[:space:]]+url "' "$formula_file" | grep -oE 'recoll-[0-9]+\.[0-9]+\.[0-9]+' | sed 's/recoll-//')
 
     validate_not_empty "$version" "Formula version" || return 1
 
