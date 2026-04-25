@@ -19,9 +19,15 @@ class Recoll < Formula
   depends_on "libmagic"
   depends_on "libxml2"
   depends_on "libxslt"
-  depends_on "python@3.13"
+  depends_on "python"
   depends_on "qt@6"
   depends_on "xapian"
+
+  # Dynamically resolve Python version from the "python" formula dependency.
+  # This follows Homebrew's latest Python (e.g. python@3.13 → python@3.14).
+  def pyver
+    @pyver ||= Formula["python"].version.to_s.split(".")[0..1].join(".")
+  end
 
   def install
     # Upstream meson.build omits IOKit, needed by powerstatus.cpp on macOS
@@ -48,8 +54,14 @@ class Recoll < Formula
               "    '../utils/zlibut.cpp',\n    '../internfile/finderxattr.cpp',"
     end
 
-    args = %w[
+    # Fix Meson installing Python modules to nested prefix/opt/homebrew/lib/...
+    # by explicitly setting platlibdir/purelibdir to formula's lib directory
+    python_site = lib/"python#{pyver}/site-packages"
+
+    args = %W[
       -Dpython-module=true
+      -Dpython.platlibdir=#{python_site}
+      -Dpython.purelibdir=#{python_site}
       -Dqtgui=true
       -Dfsevents=true
       -Daspell=true
@@ -68,6 +80,15 @@ class Recoll < Formula
     system "meson", "compile", "-C", "build", "--verbose"
     system "meson", "install", "-C", "build"
 
+    # Rewrite filter shebangs from #!/usr/bin/env python3 to the
+    # versioned python (e.g. python3.14) matching the compiled extension
+    # Not all .py files have a shebang (e.g. cmdtalk.py, conftree.py)
+    python_bin = Formula["python"].opt_bin/"python#{pyver}"
+    Dir[prefix/"share/recoll/filters/*.py"].each do |f|
+      next unless File.read(f, 22).start_with?("#!/usr/bin/env python3")
+      inreplace f, "#!/usr/bin/env python3", "#!#{python_bin}"
+    end
+
     # Build .app bundle with macdeployqt (macOS only)
     build_app_bundle if OS.mac?
   end
@@ -80,12 +101,14 @@ class Recoll < Formula
     # Copy GUI binary only (CLI tools stay in bin/)
     cp bin/"recoll", app/"Contents/MacOS/recoll"
 
-    # Launcher script sets RECOLL_DATADIR and DYLD_LIBRARY_PATH
-    # so .app finds share/recoll data and librecoll dylib
+    # Launcher script sets RECOLL_DATADIR, DYLD_LIBRARY_PATH, and PYTHONPATH
+    # so .app finds share/recoll data, librecoll dylib, and Python modules
+    python_site = lib/"python#{pyver}/site-packages"
     (app/"Contents/MacOS/recoll-launcher").write <<~SH
       #!/bin/sh
       export RECOLL_DATADIR="#{prefix}/share/recoll"
       export DYLD_LIBRARY_PATH="#{lib}:#{Formula["qt@6"].opt_lib}"
+      export PYTHONPATH="#{python_site}:#{prefix}/share/recoll/filters"
       exec "#{app}/Contents/MacOS/recoll" "$@"
     SH
     chmod 0755, app/"Contents/MacOS/recoll-launcher"
@@ -145,6 +168,15 @@ class Recoll < Formula
         recollq         # Query index
         rclgrep         # Search without index
 
+      IMPORTANT - Python filters:
+        Some filters require additional Python packages. Install them with:
+          pip#{pyver} install lxml mutagen
+
+      IMPORTANT - Helper programs:
+        Add the following to ~/.recoll/recoll.conf so Recoll can find
+        external tools (aspell, antiword, etc.):
+          recollhelperpath = #{HOMEBREW_PREFIX}/bin
+
       Configuration: ~/.recoll/
       Documentation: https://www.recoll.org/
     EOS
@@ -152,5 +184,6 @@ class Recoll < Formula
 
   test do
     system bin/"recollindex", "-h"
+    system Formula["python"].opt_bin/"python#{pyver}", "-c", "import recoll; print('recoll module OK')"
   end
 end
