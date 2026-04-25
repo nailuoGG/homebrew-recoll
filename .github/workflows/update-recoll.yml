@@ -34,8 +34,20 @@ jobs:
             "${{ steps.check_updates.outputs.version }}" \
             "${{ steps.check_updates.outputs.sha256 }}"
 
+      - name: Check Formula version
+        id: check_formula
+        run: |
+          ./scripts/check-formula-version.sh
+
+      - name: Update Formula if needed
+        if: steps.check_formula.outputs.formula_update_needed == 'true'
+        run: |
+          ./scripts/update-formula.sh \
+            "${{ steps.check_formula.outputs.formula_version }}" \
+            "${{ steps.check_formula.outputs.formula_sha256 }}"
+
       - name: Create Pull Request
-        if: steps.check_updates.outputs.update_needed == 'true'
+        if: steps.check_updates.outputs.update_needed == 'true' || steps.check_formula.outputs.formula_update_needed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -48,8 +60,11 @@ jobs:
       - name: Summary
         run: |
           if [ "${{ steps.check_updates.outputs.update_needed }}" == "true" ]; then
-            echo "✅ Update completed successfully!"
-            echo "Updated Recoll from ${{ steps.check_updates.outputs.current_version }} to ${{ steps.check_updates.outputs.version }}"
-          else
-            echo "ℹ️ No update needed. Recoll is already up to date."
+            echo "Cask updated from ${{ steps.check_updates.outputs.current_version }} to ${{ steps.check_updates.outputs.version }}"
+          fi
+          if [ "${{ steps.check_formula.outputs.formula_update_needed }}" == "true" ]; then
+            echo "Formula updated to ${{ steps.check_formula.outputs.formula_version }}"
+          fi
+          if [ "${{ steps.check_updates.outputs.update_needed }}" != "true" ] && [ "${{ steps.check_formula.outputs.formula_update_needed }}" != "true" ]; then
+            echo "No updates needed. Both Cask and Formula are up to date."
           fi

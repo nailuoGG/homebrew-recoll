@@ -83,10 +83,47 @@ jobs:
         run: |
           # Clean up the installation to free up space
           brew uninstall --zap --force recoll || true
-          
+
           # Remove any remaining files
           sudo rm -rf "/Applications/Recoll.app" || true
           rm -rf "$HOME/.recoll" || true
           rm -rf "$HOME/.config/Recoll.org" || true
-          
+
+          echo "Cleanup completed"
+
+  test-formula:
+    name: Test Recoll Formula
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Link tap for testing
+        run: |
+          tap_dir="$(brew --repository)/Library/Taps/nailuoGG"
+          mkdir -p "$tap_dir"
+          rm -rf "$tap_dir/homebrew-recoll"
+          ln -s "$GITHUB_WORKSPACE" "$tap_dir/homebrew-recoll"
+          # Verify the linked Formula matches the PR branch
+          head -5 Formula/recoll-from-source.rb
+
+      - name: Audit Formula
+        run: brew audit --formula nailuoGG/recoll/recoll-from-source --online
+
+      - name: Build and install
+        run: brew install --build-from-source nailuoGG/recoll/recoll-from-source
+
+      - name: Test installation
+        run: brew test nailuoGG/recoll/recoll-from-source
+
+      - name: Clean up
+        if: always()
+        run: |
+          brew uninstall --force recoll-from-source || true
+          rm -rf "$HOME/.recoll" || true
           echo "Cleanup completed"

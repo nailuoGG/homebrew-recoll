@@ -191,6 +191,23 @@ extract_latest_version() {
 }
 
 # =============================================================================
+# FORMULA UTILITIES
+# =============================================================================
+
+extract_formula_version() {
+    local formula_file="$1"
+
+    validate_file_exists "$formula_file" "Formula file" || return 1
+
+    local version
+    version=$(grep -E '^[[:space:]]+url "' "$formula_file" | grep -oE 'recoll-[0-9]+\.[0-9]+\.[0-9]+' | sed 's/recoll-//')
+
+    validate_not_empty "$version" "Formula version" || return 1
+
+    echo "$version"
+}
+
+# =============================================================================
 # EXIT HANDLING (Errors should never pass silently)
 # =============================================================================
 

@@ -2,26 +2,38 @@
 <h1 align="center">Recoll Homebrew Tap</h1>
 #+end_html
 
-** Lazy Homebrew install for Recoll on macOS
+** Homebrew tap for Recoll on macOS
 
-This is just a convenience tap that packages the official Recoll macOS builds 
-as a Homebrew cask. No compilation from source - just the official binaries.
+Two ways to install Recoll: pre-built binary (quick) or build from source (customizable).
 
-** Quick Install
+** Installation
+
+*** Option 1: Pre-built Binary (recommended)
 
 #+begin_src shell
 brew tap nailuoGG/recoll
 brew install --cask recoll
 #+end_src
 
+Quick install with official macOS binary, no compilation needed.
+
+*** Option 2: Build from Source
+
+#+begin_src shell
+brew tap nailuoGG/recoll
+brew install recoll-from-source
+#+end_src
+
+Compile from source with Qt6 GUI, Python module, and fsevents support.
+
 That's it. Run ~recoll~ to start searching.
 
 ** Details
 
-- Uses official binaries from [[https://www.recoll.org/downloads/macos/]]
-- No source compilation (QT dependencies are complex)
+- Cask uses official binaries from [[https://www.recoll.org/downloads/macos/]]
+- Formula builds from source via Meson with Qt6 and Python support
 - Packages are not digitally signed (same as official)
-- Automated updates via GitHub Actions
+- Automated updates via GitHub Actions for both Cask and Formula
 
 ** Links
 
