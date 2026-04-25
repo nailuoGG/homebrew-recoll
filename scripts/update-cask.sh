@@ -7,7 +7,8 @@
 set -euo pipefail
 
 # Source shared utilities
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 # shellcheck source=utils.sh
 source "$SCRIPT_DIR/utils.sh"
 
@@ -43,15 +44,12 @@ display_update_info() {
 update_cask_field() {
     local field="$1"
     local value="$2"
-    
-    # Use more explicit sed command with clear pattern matching
-    sed -i.tmp "s/${field} '[^']*'/${field} '${value}'/" "$CASK_FILE"
-    
-    if [[ $? -ne 0 ]]; then
+
+    if ! sed -i.tmp "s/${field} '[^']*'/${field} '${value}'/" "$CASK_FILE"; then
         log_error "Failed to update $field field"
         return 1
     fi
-    
+
     return 0
 }
 

@@ -1,9 +1,13 @@
 #!/bin/bash
+# shellcheck source=utils.sh
+
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 source "$SCRIPT_DIR/utils.sh"
 
-readonly FORMULA_FILE="Formula/recoll-from-source.rb"
+readonly FORMULA_FILE="Formula/recoll.rb"
 readonly FORMULA_DOWNLOAD_PAGE="https://www.recoll.org/pages/download.html"
 readonly SOURCE_SHA256_TEMPLATE="https://www.recoll.org/recoll-%s.tar.gz.sha256"
 
@@ -24,6 +28,7 @@ fetch_latest_source_version() {
 fetch_source_sha256() {
     local version="$1"
     local sha256_url
+    # shellcheck disable=SC2059
     sha256_url=$(printf "$SOURCE_SHA256_TEMPLATE" "$version")
 
     log_info "Fetching SHA256 from: $sha256_url"

@@ -11,6 +11,7 @@ set -euo pipefail
 
 readonly DOWNLOAD_URL="https://www.recoll.org/downloads/macos/"
 readonly VERSION_PATTERN='recoll-[0-9]\+\.[0-9]\+\.[0-9]\+-[0-9]\{8\}-[a-f0-9]\{8\}\.dmg'
+# shellcheck disable=SC2034 # Used by sourcing scripts (check-version.sh, update-cask.sh)
 readonly DEFAULT_CASK_FILE="Casks/recoll.rb"
 readonly GITHUB_OUTPUT_FILE="${GITHUB_OUTPUT:-}"
 

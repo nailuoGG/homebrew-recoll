@@ -21,10 +21,6 @@ cask 'recoll' do
     system_command 'xattr', args: ['-rd', 'com.apple.quarantine', "#{appdir}/Recoll.app"]
   end
 
-  caveats do
-    path_environment_variable "#{appdir}/Recoll.app/Contents/MacOS"
-  end
-
   zap trash: [
     '~/.recoll',
     '~/.config/Recoll.org'

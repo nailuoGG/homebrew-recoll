@@ -50,11 +50,14 @@ jobs:
         if: steps.check_updates.outputs.update_needed == 'true' || steps.check_formula.outputs.formula_update_needed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          CASK_VERSION: ${{ steps.check_updates.outputs.version }}
+          CASK_CURRENT: ${{ steps.check_updates.outputs.current_version }}
+          FORMULA_VERSION: ${{ steps.check_formula.outputs.formula_version }}
         run: |
           BRANCH_NAME="update-recoll-$(date +%Y%m%d-%H%M%S)"
           ./scripts/create-pr.sh \
-            "${{ steps.check_updates.outputs.version }}" \
-            "${{ steps.check_updates.outputs.current_version }}" \
+            "${CASK_VERSION:-${FORMULA_VERSION}}" \
+            "${CASK_CURRENT:-current}" \
             "$BRANCH_NAME"
 
       - name: Summary

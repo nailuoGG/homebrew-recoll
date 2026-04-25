@@ -4,7 +4,7 @@
 
 ** Homebrew tap for Recoll on macOS
 
-Two ways to install Recoll: pre-built binary (quick) or build from source (customizable).
+Two ways to install Recoll: pre-built binary (quick) or build from source (full features + .app bundle).
 
 ** Installation
 
@@ -21,17 +21,43 @@ Quick install with official macOS binary, no compilation needed.
 
 #+begin_src shell
 brew tap nailuoGG/recoll
-brew install recoll-from-source
+brew install recoll
 #+end_src
 
-Compile from source with Qt6 GUI, Python module, and fsevents support.
+Compile from source with Qt6 GUI, Python module, fsevents, aspell, and more.
+Also creates a =Recoll.app= bundle you can link to =/Applications=.
 
-That's it. Run ~recoll~ to start searching.
+** Comparison
+
+| Feature           | Cask (=--cask recoll=)  | Formula (=brew install recoll=) |
+|-------------------+-------------------------+---------------------------------|
+| Source            | Official pre-built DMG  | Compiled from source            |
+| .app location     | =/Applications/=         | Cellar, link manually           |
+| CLI in PATH       | No (inside .app)        | Yes (bin/)                      |
+| Python module     | No                      | Yes                             |
+| Build time        | Instant                 | ~5-20 min                       |
+
+** After Installing from Source
+
+Add =Recoll.app= to =/Applications=:
+#+begin_src shell
+ln -sf $(brew --prefix recoll)/Recoll.app /Applications/Recoll-from-source.app
+#+end_src
+
+CLI tools are automatically in your PATH:
+#+begin_src shell
+recoll          # Start GUI
+recollindex     # Index files
+recollq         # Query index from command line
+rclgrep         # Search without index
+#+end_src
+
+Configuration is stored in =~/.recoll/=.
 
 ** Details
 
 - Cask uses official binaries from [[https://www.recoll.org/downloads/macos/]]
-- Formula builds from source via Meson with Qt6 and Python support
+- Formula builds via Meson with Qt6, Python, aspell, semantic search, webengine preview
 - Packages are not digitally signed (same as official)
 - Automated updates via GitHub Actions for both Cask and Formula
 
