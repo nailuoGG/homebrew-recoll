@@ -19,7 +19,6 @@ source "$SCRIPT_DIR/utils.sh"
 readonly NEW_VERSION="$1"
 readonly CURRENT_VERSION="$2"
 readonly BRANCH_NAME="$3"
-readonly DEFAULT_CASK_FILE="Casks/recoll.rb"
 readonly DEFAULT_FORMULA_FILE="Formula/recoll.rb"
 
 # =============================================================================
