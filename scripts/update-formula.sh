@@ -21,8 +21,8 @@ update_formula() {
 
     log_info "Updating Formula to version $version..."
 
-    perl -pi -e "s|url \"https://www.recoll.org/recoll-.*\\.tar\\.gz\"|url \"https://www.recoll.org/recoll-${version}.tar.gz\"|" \
-             -e "s|^  sha256 \".*\"$|  sha256 \"${sha256}\"|" "$FORMULA_FILE"
+    perl -pi -e "s|url \"https://www.recoll.org/recoll-.*\\.tar\\.gz\"|url \"https://www.recoll.org/recoll-${version}.tar.gz\"|;" \
+             -e "s|^  sha256 \".*\"$|  sha256 \"${sha256}\"|;" "$FORMULA_FILE"
 
     local updated_ver
     updated_ver=$(extract_formula_version "$FORMULA_FILE")
