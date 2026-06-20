@@ -57,6 +57,17 @@ validate_not_empty() {
     return 0
 }
 
+validate_cask_field_name() {
+    local field="$1"
+
+    if [[ ! "$field" =~ ^[[:alpha:]_][[:alnum:]_]*$ ]]; then
+        log_error "Invalid cask field name: $field"
+        return 1
+    fi
+
+    return 0
+}
+
 validate_url_accessible() {
     local url="$1"
     
@@ -166,15 +177,35 @@ set_github_output() {
 
 extract_current_version() {
     local cask_file="$1"
-    
+
+    extract_cask_field_value "$cask_file" "version" "Current version"
+}
+
+extract_cask_field_value() {
+    local cask_file="$1"
+    local field="$2"
+    local description="${3:-Cask field value}"
+
     validate_file_exists "$cask_file" "Cask file" || return 1
-    
-    local version
-    version=$(grep "version '" "$cask_file" | sed "s/.*version '\(.*\)'.*/\1/")
-    
-    validate_not_empty "$version" "Current version" || return 1
-    
-    echo "$version"
+    validate_not_empty "$field" "Cask field name" || return 1
+    validate_cask_field_name "$field" || return 1
+
+    local value
+    value=$(CASK_FIELD="$field" perl -lne '
+        my $field = $ENV{CASK_FIELD};
+        if (/^\s*\Q$field\E\s+"((?:\\.|[^"\\])*)"\s*$/) {
+            print $1;
+            exit 0;
+        }
+        if (/^\s*\Q$field\E\s+\x27((?:\\.|[^\\\x27])*)\x27\s*$/) {
+            print $1;
+            exit 0;
+        }
+    ' "$cask_file")
+
+    validate_not_empty "$value" "$description" || return 1
+
+    echo "$value"
 }
 
 extract_latest_version() {
