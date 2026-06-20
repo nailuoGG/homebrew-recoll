@@ -57,6 +57,17 @@ validate_not_empty() {
     return 0
 }
 
+validate_cask_field_name() {
+    local field="$1"
+
+    if [[ ! "$field" =~ ^[[:alpha:]_][[:alnum:]_]*$ ]]; then
+        log_error "Invalid cask field name: $field"
+        return 1
+    fi
+
+    return 0
+}
+
 validate_url_accessible() {
     local url="$1"
     
@@ -177,6 +188,7 @@ extract_cask_field_value() {
 
     validate_file_exists "$cask_file" "Cask file" || return 1
     validate_not_empty "$field" "Cask field name" || return 1
+    validate_cask_field_name "$field" || return 1
 
     local value
     value=$(CASK_FIELD="$field" perl -lne '
