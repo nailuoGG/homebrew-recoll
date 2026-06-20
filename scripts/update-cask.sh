@@ -48,7 +48,8 @@ update_cask_field() {
     if ! CASK_FIELD="$field" CASK_VALUE="$value" perl -0pi.tmp -e '
         my $field = $ENV{CASK_FIELD};
         my $value = $ENV{CASK_VALUE};
-        s/^(\s*\Q$field\E\s+)(["\047]).*?\2\s*$/$1$2$value$2/mg;
+        s/^(\s*\Q$field\E\s+)"[^"\n]*"\s*$/$1"$value"/mg;
+        s/^(\s*\Q$field\E\s+)\047[^\047\n]*\047\s*$/$1\047$value\047/mg;
     ' "$CASK_FILE"; then
         log_error "Failed to update $field field"
         return 1

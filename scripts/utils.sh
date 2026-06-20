@@ -181,8 +181,12 @@ extract_cask_field_value() {
     local value
     value=$(CASK_FIELD="$field" perl -lne '
         my $field = $ENV{CASK_FIELD};
-        if (/^\s*\Q$field\E\s+(["\047])(.*?)\1\s*$/) {
-            print $2;
+        if (/^\s*\Q$field\E\s+"([^"\n]*)"\s*$/) {
+            print $1;
+            exit 0;
+        }
+        if (/^\s*\Q$field\E\s+\047([^\047\n]*)\047\s*$/) {
+            print $1;
             exit 0;
         }
     ' "$cask_file")
