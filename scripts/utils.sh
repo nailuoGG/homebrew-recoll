@@ -176,13 +176,13 @@ extract_cask_field_value() {
     local description="${3:-Cask field value}"
 
     validate_file_exists "$cask_file" "Cask file" || return 1
-    validate_not_empty "$field" "Cask field" || return 1
+    validate_not_empty "$field" "Cask field name" || return 1
 
     local value
     value=$(CASK_FIELD="$field" perl -lne '
         my $field = $ENV{CASK_FIELD};
-        if (/^\s*\Q$field\E\s+["\047]([^"\047]+)["\047]\s*$/) {
-            print $1;
+        if (/^\s*\Q$field\E\s+(["\047])(.*?)\1\s*$/) {
+            print $2;
             exit 0;
         }
     ' "$cask_file")
