@@ -166,15 +166,30 @@ set_github_output() {
 
 extract_current_version() {
     local cask_file="$1"
-    
+
+    extract_cask_field_value "$cask_file" "version" "Current version"
+}
+
+extract_cask_field_value() {
+    local cask_file="$1"
+    local field="$2"
+    local description="${3:-Cask field value}"
+
     validate_file_exists "$cask_file" "Cask file" || return 1
-    
-    local version
-    version=$(grep "version '" "$cask_file" | sed "s/.*version '\(.*\)'.*/\1/")
-    
-    validate_not_empty "$version" "Current version" || return 1
-    
-    echo "$version"
+    validate_not_empty "$field" "Cask field" || return 1
+
+    local value
+    value=$(CASK_FIELD="$field" perl -lne '
+        my $field = $ENV{CASK_FIELD};
+        if (/^\s*\Q$field\E\s+["\047]([^"\047]+)["\047]\s*$/) {
+            print $1;
+            exit 0;
+        }
+    ' "$cask_file")
+
+    validate_not_empty "$value" "$description" || return 1
+
+    echo "$value"
 }
 
 extract_latest_version() {

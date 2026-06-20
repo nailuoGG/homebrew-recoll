@@ -45,7 +45,11 @@ update_cask_field() {
     local field="$1"
     local value="$2"
 
-    if ! sed -i.tmp "s/${field} '[^']*'/${field} '${value}'/" "$CASK_FILE"; then
+    if ! CASK_FIELD="$field" CASK_VALUE="$value" perl -0pi.tmp -e '
+        my $field = $ENV{CASK_FIELD};
+        my $value = $ENV{CASK_VALUE};
+        s/^(\s*\Q$field\E\s+)["\047][^"\047]*["\047]\s*$/${1}"$value"/mg;
+    ' "$CASK_FILE"; then
         log_error "Failed to update $field field"
         return 1
     fi
@@ -87,7 +91,7 @@ verify_field_update() {
     local expected_value="$2"
     
     local actual_value
-    actual_value=$(grep "${field} '" "$CASK_FILE" | sed "s/.*${field} '\(.*\)'.*/\1/")
+    actual_value=$(extract_cask_field_value "$CASK_FILE" "$field" "$field value")
     
     if [[ "$actual_value" != "$expected_value" ]]; then
         log_error "${field} update verification failed"
@@ -177,4 +181,3 @@ fi
 
 # Execute main function with all arguments
 main "$@"
-
