@@ -197,7 +197,7 @@ extract_cask_field_value() {
             print $1;
             exit 0;
         }
-        if (/^\s*\Q$field\E\s+\047([^\047]*)\047\s*$/) {
+        if (/^\s*\Q$field\E\s+\x27([^\x27]*)\x27\s*$/) {
             print $1;
             exit 0;
         }

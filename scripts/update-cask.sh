@@ -51,7 +51,7 @@ update_cask_field() {
         my $field = $ENV{CASK_FIELD};
         my $value = $ENV{CASK_VALUE};
         s/^(\s*\Q$field\E\s+)"[^"]*"\s*$/$1 . q{"} . $value . q{"}/mge;
-        s/^(\s*\Q$field\E\s+)\047[^\047]*\047\s*$/$1 . "\047" . $value . "\047"/mge;
+        s/^(\s*\Q$field\E\s+)\x27[^\x27]*\x27\s*$/$1 . "\x27" . $value . "\x27"/mge;
     ' "$CASK_FILE"; then
         log_error "Failed to update $field field"
         return 1
