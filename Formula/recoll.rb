@@ -1,8 +1,8 @@
 class Recoll < Formula
   desc "Full-text search for your desktop"
   homepage "https://www.recoll.org/"
-  url "https://www.recoll.org/recoll-1.44.0.tar.gz"
-  sha256 "35e63cc2bbd0deebc4695cc744c7dd5c4358730ac9a4f55d73c10c1ad1b5a472"
+  url "https://www.recoll.org/recoll-1.44.1.tar.gz"
+  sha256 "0f77f5ef3a6ea3a6b95e3305eab6ff4c407244cec490ede88150a1b029be127e"
   license "GPL-2.0-or-later"
   head "https://framagit.org/medoc92/recoll.git", branch: "master"
 
