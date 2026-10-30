@@ -1,7 +1,6 @@
 cask "recoll" do
-  version "1.44.2-20260930-6be10191"
-  sha256 "b5f09df0dca19fccbe2ca4cbbb99e202530533ccb9abcb1a5e5cc374ea37b863"
-
+  version "1.45.0-20261027-c2978c94"
+  sha256 "9f77b6231686cffab651739538e2364a37a4df6649b26eaef230d8a5816c3ccb"
   url "https://www.recoll.org/downloads/macos/recoll-#{version}.dmg"
   name "Recoll"
   desc "Full-text search for your desktop"
