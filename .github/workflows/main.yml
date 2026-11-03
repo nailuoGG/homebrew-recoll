@@ -29,22 +29,16 @@ jobs:
         with:
           core: false
           cask: true
-          test-bot: false
-
-      - name: Link tap for testing
-        run: |
-          # Link the repository to Homebrew's tap directory
-          ln -s "$GITHUB_WORKSPACE" "$(brew --prefix)/Library/Taps"
 
       - name: Verify cask syntax
         run: |
           # Validate cask file syntax
-          brew audit --strict --online recoll
+          brew audit --cask --strict --online nailuoGG/recoll/recoll
 
       - name: Install Recoll cask
         run: |
           # Test installation
-          brew install --cask recoll --verbose
+          brew install --cask nailuoGG/recoll/recoll --verbose
 
       - name: Verify installation
         run: |
@@ -82,7 +76,7 @@ jobs:
         if: always()
         run: |
           # Clean up the installation to free up space
-          brew uninstall --zap --force recoll || true
+          brew uninstall --cask --zap --force nailuoGG/recoll/recoll || true
 
           # Remove any remaining files
           sudo rm -rf "/Applications/Recoll.app" || true
