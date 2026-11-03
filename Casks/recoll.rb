@@ -16,7 +16,7 @@ cask "recoll" do
   app "Recoll.app"
 
   postflight_steps do
-    system_command "xattr", args: ["-rd", "com.apple.quarantine", "#{appdir}/Recoll.app"]
+    run "/usr/bin/xattr", args: ["-rd", "com.apple.quarantine", "{{appdir}}/Recoll.app"]
   end
 
   zap trash: [
