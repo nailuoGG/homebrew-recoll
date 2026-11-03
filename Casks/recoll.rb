@@ -15,7 +15,7 @@ cask "recoll" do
 
   app "Recoll.app"
 
-  postflight do
+  postflight_steps do
     system_command "xattr", args: ["-rd", "com.apple.quarantine", "#{appdir}/Recoll.app"]
   end
 
