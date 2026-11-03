@@ -1,0 +1,14 @@
+Casks/recoll.rb
+  h_c3f6840f1aa90e 2-3,14,16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e10c298cf9bb98e3638cac734b325ea561a4474f",
+  "prompts": {},
+  "humans": {
+    "h_c3f6840f1aa90e": {
+      "author": "agent <agent@code.ytj>"
+    }
+  }
+}
