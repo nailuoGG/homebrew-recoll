@@ -67,8 +67,8 @@ jobs:
             exit 1
           fi
           
-          # Test basic help command
-          recoll --help || echo "Help command completed"
+          # Verify the binary starts and reports its version successfully
+          recoll -v
           
           echo "Basic functionality test passed"
 
