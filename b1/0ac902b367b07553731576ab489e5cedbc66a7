@@ -1,0 +1,14 @@
+Formula/recoll.rb
+  h_1c00b09ac89128 40-41,55-58,191-201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b10ac902b367b07553731576ab489e5cedbc66a7",
+  "prompts": {},
+  "humans": {
+    "h_1c00b09ac89128": {
+      "author": "James L. <nailuogg@gmail.com>"
+    }
+  }
+}
