@@ -37,7 +37,8 @@ class Recoll < Formula
               "librecolldeps += core_services  # Add the CoreServices framework as a dependency\n#{iokit_dep}"
 
     # Upstream rclgrep/meson.build misses iconv, CoreServices/IOKit, and
-    # finderxattr.cpp (only added to librecoll, not rclgrep's source list)
+    # finderxattr.cpp (only added to librecoll, not rclgrep's source list).
+    # Recoll 1.46.0 also omits the Japanese splitter and its stem map.
     inreplace "rclgrep/meson.build" do |s|
       s.gsub! "rclgrep_deps = [libxml, libxslt, libz]",
               "rclgrep_deps = [libxml, libxslt, libz, dependency('iconv', method: 'auto')]"
@@ -51,7 +52,10 @@ class Recoll < Formula
       s.gsub! "    rclgrep_deps += libmagic",
               macos_patch
       s.gsub! "    '../utils/zlibut.cpp',",
-              "    '../utils/zlibut.cpp',\n    '../internfile/finderxattr.cpp',"
+              "    '../utils/zlibut.cpp',\n" \
+              "    '../internfile/finderxattr.cpp',\n" \
+              "    '../common/jasplitter.cpp',\n" \
+              "    '../rcldb/stemmap.cpp',"
     end
 
     # Fix Meson installing Python modules to nested prefix/opt/homebrew/lib/...
@@ -184,6 +188,17 @@ class Recoll < Formula
 
   test do
     system bin/"recollindex", "-h"
+
+    rclgrep_conf = testpath/"rclgrep-conf"
+    rclgrep_conf.mkpath
+    (rclgrep_conf/"recoll.conf").write <<~EOS
+      handlerlogfilename = /dev/null
+      textunknownasplain = 1
+      loglevel = 1
+    EOS
+    input = testpath/"rclgrep-smoke.txt"
+    input.write("recollsmokemarker\n")
+    system bin/"rclgrep", "--config", rclgrep_conf.to_s, "-q", "recollsmokemarker", input.to_s
     system Formula["python"].opt_bin/"python#{pyver}", "-c", "import recoll; print('recoll module OK')"
   end
 end
